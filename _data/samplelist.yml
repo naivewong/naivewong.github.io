@@ -1,0 +1,11 @@
+docs_list_title: CSCI3150 Lab 1
+docs:
+
+- title: Virtual Machine Setup
+  url: chapter1.html
+
+- title: Try the VM
+  url: 2-try-the-vm.html
+
+- title: Terminal
+  url: 3-terminal.html
