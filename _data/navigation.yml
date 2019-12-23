@@ -1,5 +1,5 @@
-docs_list_title: CSCI3150 Lab 1
-docs:
+- title: Home
+  url: /
 
 - title: Virtual Machine Setup
   url: chapter1.html
