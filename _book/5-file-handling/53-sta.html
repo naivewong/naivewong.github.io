@@ -1,0 +1,636 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>5.3 Stat · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="54-checking-disk-space-utilization.html" />
+    
+    
+    <link rel="prev" href="52-mount.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../chapter1.html">
+            
+                <a href="../chapter1.html">
+            
+                    
+                    1 Virtual Machine Setup
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../chapter1/11-obtain-vritualbox.html">
+            
+                <a href="../chapter1/11-obtain-vritualbox.html">
+            
+                    
+                    1.1 Obtain Virtualbox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../chapter1/12-obtain-the-virtualbox-machine-image.html">
+            
+                <a href="../chapter1/12-obtain-the-virtualbox-machine-image.html">
+            
+                    
+                    1.2 Obtain the VirtualBox machine image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../chapter1/13-import-the-machine-image.html">
+            
+                <a href="../chapter1/13-import-the-machine-image.html">
+            
+                    
+                    1.3 Import the machine image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../2-try-the-vm.html">
+            
+                <a href="../2-try-the-vm.html">
+            
+                    
+                    2 Try the VM
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../2-try-the-vm/21-power-up-the-machine.html">
+            
+                <a href="../2-try-the-vm/21-power-up-the-machine.html">
+            
+                    
+                    2.1 Power up the machine
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../2-try-the-vm/22-login.html">
+            
+                <a href="../2-try-the-vm/22-login.html">
+            
+                    
+                    2.2 Login
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../2-try-the-vm/23-poweroff.html">
+            
+                <a href="../2-try-the-vm/23-poweroff.html">
+            
+                    
+                    2.3 Poweroff
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../2-try-the-vm/24-host-key-of-virtualbox.html">
+            
+                <a href="../2-try-the-vm/24-host-key-of-virtualbox.html">
+            
+                    
+                    2.4 Host key of VirtualBox
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../3-terminal.html">
+            
+                <a href="../3-terminal.html">
+            
+                    
+                    3 Terminal
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../3-terminal/31-open-a-terminal.html">
+            
+                <a href="../3-terminal/31-open-a-terminal.html">
+            
+                    
+                    3.1 Open a terminal
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../3-terminal/32-close-a-terminal.html">
+            
+                <a href="../3-terminal/32-close-a-terminal.html">
+            
+                    
+                    3.2 Close a terminal
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../3-terminal/33-file-management.html">
+            
+                <a href="../3-terminal/33-file-management.html">
+            
+                    
+                    3.3 File management
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../3-terminal/34-file-editing.html">
+            
+                <a href="../3-terminal/34-file-editing.html">
+            
+                    
+                    3.4 File Editing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../3-terminal/35-root-user.html">
+            
+                <a href="../3-terminal/35-root-user.html">
+            
+                    
+                    3.5 Root user
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../4-file-transfer.html">
+            
+                <a href="../4-file-transfer.html">
+            
+                    
+                    4 File transfer
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../4-file-transfer/41-install-the-virtualbox-addons.html">
+            
+                <a href="../4-file-transfer/41-install-the-virtualbox-addons.html">
+            
+                    
+                    4.1 Install the Virtualbox Addons
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../4-file-transfer/42-add-shared-folder-settings.html">
+            
+                <a href="../4-file-transfer/42-add-shared-folder-settings.html">
+            
+                    
+                    4.2 Add Shared Folder Settings
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../5-file-handling.html">
+            
+                <a href="../5-file-handling.html">
+            
+                    
+                    5 File handling
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="51-file-permission.html">
+            
+                <a href="51-file-permission.html">
+            
+                    
+                    5.1 File permission
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="52-mount.html">
+            
+                <a href="52-mount.html">
+            
+                    
+                    5.2 Mount
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.6.3" data-path="53-sta.html">
+            
+                <a href="53-sta.html">
+            
+                    
+                    5.3 Stat
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="54-checking-disk-space-utilization.html">
+            
+                <a href="54-checking-disk-space-utilization.html">
+            
+                    
+                    5.4 Checking disk space utilization
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../6-package-installation.html">
+            
+                <a href="../6-package-installation.html">
+            
+                    
+                    6 Package installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../7-command-manuals.html">
+            
+                <a href="../7-command-manuals.html">
+            
+                    
+                    7 Command Manuals
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../8-more-about-virtualbox.html">
+            
+                <a href="../8-more-about-virtualbox.html">
+            
+                    
+                    8 More about VirtualBox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../9-reference.html">
+            
+                <a href="../9-reference.html">
+            
+                    
+                    9 Reference
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >5.3 Stat</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="stat"><code>stat</code> </h1>
+<p><code>stat</code>command displays the detailed status of a particular file or a file system.</p>
+<h2 id="display-detailed-status-of-a-file">Display detailed status of a file.<img src="../assets/x.png" alt=""> </h2>
+<h2 id="display-the-status-of-a-file-system">Display the status of a file system. </h2>
+<p><img src="../assets/11.png" alt=""></p>
+<h2 id="details-of-stat-command-output">Details of Stat Command Output </h2>
+<p>File: &apos;myfile&apos; -- File name</p>
+<ul>
+<li>Size: 2086 -- File size in bytes</li>
+<li>Blocks: 8 --Total number of blocks used by this file.</li>
+<li>IO Block: 4096 --IO block size for this file</li>
+<li>regular file -- Indicates the file type</li>
+<li>Device: 801h/2049d -- Device number in hex and device number in decimal</li>
+<li>Inode: 820927 -- Inode number is a unique number for each file which is used for the internal maintenance by the file system.</li>
+<li>Links: 1 -- Number of links to the file</li>
+<li>Access: (0666/-rw-rw-rw-) -- Access specifier displayed in both octal and character format</li>
+<li>Uid: ( 1000/csci3150) -- File owner&#x2019;s user id and user name</li>
+<li>Gid: ( 1000/csci3150) -- File owner&#x2019;s group id and group name</li>
+<li>Access: 2016-11-05 10:49:53.773094791 +0800 -- Last access time of the file</li>
+<li>Modify: 2016-11-05 10:49:53.773094791 +0800 -- Last modification time of the file</li>
+<li>Change: 2016-11-05 10:49:53.777094791 +0800 -- Last change time of the inode data of that file</li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="52-mount.html" class="navigation navigation-prev " aria-label="Previous page: 5.2 Mount">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="54-checking-disk-space-utilization.html" class="navigation navigation-next " aria-label="Next page: 5.4 Checking disk space utilization">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"5.3 Stat","level":"1.6.3","depth":2,"next":{"title":"5.4 Checking disk space utilization","level":"1.6.4","depth":2,"path":"5-file-handling/54-checking-disk-space-utilization.md","ref":"5-file-handling/54-checking-disk-space-utilization.md","articles":[]},"previous":{"title":"5.2 Mount","level":"1.6.2","depth":2,"path":"5-file-handling/52-mount.md","ref":"5-file-handling/52-mount.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"5-file-handling/53-sta.md","mtime":"2019-12-21T09:09:31.024Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-12-24T08:04:22.441Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
