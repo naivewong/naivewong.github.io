@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Zhiqi Wang</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/gallery.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Zhiqi Wang</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="gallery.html" class="nav-link active">Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="container">
+        <!-- Gallery Header -->
+        <header class="gallery-header">
+            <h1 class="gallery-title">Photo Gallery</h1>
+            <!-- <p class="gallery-subtitle">A collection of memorable moments</p> -->
+        </header>
+
+        <!-- Category Navigation -->
+        <div class="category-nav">
+            <a href="#category-japan" class="category-link">Japan</a>
+            <a href="#category-taiwan" class="category-link">Taiwan</a>
+            <a href="#category-europe" class="category-link">Europe</a>
+            <a href="#category-thailand" class="category-link">Thailand</a>
+            <a href="#category-mainland-china" class="category-link">Mainland China</a>
+        </div>
+
+        <!-- Japan Section -->
+        <section class="gallery-section" id="category-japan">
+            <h2 class="category-title">🇯🇵 Japan</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2118_border.jpg" alt="Japan Photo 1">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2147_border.jpg" alt="Japan Photo 2">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2199_border.jpg" alt="Japan Photo 3">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2345_border.jpg" alt="Japan Photo 4">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2362_border.jpg" alt="Japan Photo 5">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2395_border.jpg" alt="Japan Photo 6">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2484_border.jpg" alt="Japan Photo 7">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2485_border.jpg" alt="Japan Photo 8">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2493_border.jpg" alt="Japan Photo 9">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2497_border.jpg" alt="Japan Photo 10">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2503_border.jpg" alt="Japan Photo 11">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2575_border.jpg" alt="Japan Photo 12">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2765_border.jpg" alt="Japan Photo 13">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2903_border.jpg" alt="Japan Photo 14">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_2915_border.jpg" alt="Japan Photo 15">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Japan/Z30_3134_border.jpg" alt="Japan Photo 16">
+                </div>
+            </div>
+        </section>
+
+        <!-- Taiwan Section -->
+        <section class="gallery-section" id="category-taiwan">
+            <h2 class="category-title">🇹🇼 Taiwan</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/mayday_border.jpg" alt="Taiwan Photo 1">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_0882_border.jpg" alt="Taiwan Photo 2">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_0913-2_border.jpg" alt="Taiwan Photo 3">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_1022_border.jpg" alt="Taiwan Photo 4">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_1334-2_border.jpg" alt="Taiwan Photo 5">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_1489-3_border.jpg" alt="Taiwan Photo 6">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5236_border.jpg" alt="Taiwan Photo 7">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5275_border.jpg" alt="Taiwan Photo 8">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5291_border.jpg" alt="Taiwan Photo 9">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5323_border.jpg" alt="Taiwan Photo 10">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5391_border.jpg" alt="Taiwan Photo 11">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5463_border.jpg" alt="Taiwan Photo 12">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5505_border.jpg" alt="Taiwan Photo 13">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5521_border.jpg" alt="Taiwan Photo 14">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Taiwan/Z30_5556_border.jpg" alt="Taiwan Photo 15">
+                </div>
+            </div>
+        </section>
+
+        <!-- Europe Section -->
+        <section class="gallery-section" id="category-europe">
+            <h2 class="category-title">🇪🇺 Europe</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3242-2_border.JPEG" alt="Europe Photo 1">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3443-2_border.JPEG" alt="Europe Photo 2">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3564-2_border.JPEG" alt="Europe Photo 3">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3837_border.JPEG" alt="Europe Photo 4">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3846_border.JPEG" alt="Europe Photo 5">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3848_border.JPEG" alt="Europe Photo 6">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3894_border.JPEG" alt="Europe Photo 7">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3929_border.JPEG" alt="Europe Photo 8">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3931_border.JPEG" alt="Europe Photo 9">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_3932_border.JPEG" alt="Europe Photo 10">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4052_border.JPEG" alt="Europe Photo 11">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4117_border.JPEG" alt="Europe Photo 12">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4146_border.JPEG" alt="Europe Photo 13">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4309_border.JPEG" alt="Europe Photo 14">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4683_border.jpg" alt="Europe Photo 15">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4700_border.jpg" alt="Europe Photo 16">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4703_border.jpg" alt="Europe Photo 17">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Europe/Z30_4755_border.jpg" alt="Europe Photo 18">
+                </div>
+            </div>
+        </section>
+
+        <!-- Thailand Section -->
+        <section class="gallery-section" id="category-thailand">
+            <h2 class="category-title">🇹🇭 Thailand</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Thailand/Z30_1685_border.jpg" alt="Thailand Photo 1">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Thailand/Z30_2051_border.jpg" alt="Thailand Photo 2">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Thailand/Z30_2076_border.jpg" alt="Thailand Photo 3">
+                </div>
+            </div>
+        </section>
+
+        <!-- Mainland China Section -->
+        <section class="gallery-section" id="category-mainland-china">
+            <h2 class="category-title">🇨🇳 Mainland China</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Mainland China/IMG_4222-2_border.jpg" alt="Mainland China Photo 1">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Mainland China/IMG_4350-2_border.jpg" alt="Mainland China Photo 2">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Mainland China/Z30_0081-2_border.jpg" alt="Mainland China Photo 3">
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img data-src="./pictures/Mainland China/Z30_0649-2_border.jpg" alt="Mainland China Photo 4">
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Zhiqi Wang. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+        <button class="lightbox-prev" onclick="changeImage(-1, event)">&#10094;</button>
+        <img class="lightbox-content" id="lightbox-img" src="" alt="">
+        <button class="lightbox-next" onclick="changeImage(1, event)">&#10095;</button>
+    </div>
+
+    <script src="./js/theme.js"></script>
+    <script src="./js/gallery.js"></script>
+</body>
+</html>

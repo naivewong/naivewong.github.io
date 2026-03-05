@@ -1,375 +1,358 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<!-- saved from url=(0020)http://qisunchn.top/ -->
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(){function hookGeo() {
-  //<![CDATA[
-  const WAIT_TIME = 100;
-  const hookedObj = {
-    getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
-    watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
-    fakeGeo: true,
-    genLat: 38.883333,
-    genLon: -77.000
-  };
-
-  function waitGetCurrentPosition() {
-    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
-      if (hookedObj.fakeGeo === true) {
-        hookedObj.tmp_successCallback({
-          coords: {
-            latitude: hookedObj.genLat,
-            longitude: hookedObj.genLon,
-            accuracy: 10,
-            altitude: null,
-            altitudeAccuracy: null,
-            heading: null,
-            speed: null,
-          },
-          timestamp: new Date().getTime(),
-        });
-      } else {
-        hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
-      }
-    } else {
-      setTimeout(waitGetCurrentPosition, WAIT_TIME);
-    }
-  }
-
-  function waitWatchPosition() {
-    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
-      if (hookedObj.fakeGeo === true) {
-        navigator.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
-        return Math.floor(Math.random() * 10000); // random id
-      } else {
-        hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
-      }
-    } else {
-      setTimeout(waitWatchPosition, WAIT_TIME);
-    }
-  }
-
-  Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
-    hookedObj.tmp_successCallback = successCallback;
-    hookedObj.tmp_errorCallback = errorCallback;
-    hookedObj.tmp_options = options;
-    waitGetCurrentPosition();
-  };
-  Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
-    hookedObj.tmp2_successCallback = successCallback;
-    hookedObj.tmp2_errorCallback = errorCallback;
-    hookedObj.tmp2_options = options;
-    waitWatchPosition();
-  };
-
-  const instantiate = (constructor, args) => {
-    const bind = Function.bind;
-    const unbind = bind.bind(bind);
-    return new (unbind(constructor, null).apply(null, args));
-  }
-
-  Blob = function (_Blob) {
-    function secureBlob(...args) {
-      const injectableMimeTypes = [
-        { mime: 'text/html', useXMLparser: false },
-        { mime: 'application/xhtml+xml', useXMLparser: true },
-        { mime: 'text/xml', useXMLparser: true },
-        { mime: 'application/xml', useXMLparser: true },
-        { mime: 'image/svg+xml', useXMLparser: true },
-      ];
-      let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
-
-      if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
-        const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
-        if (mimeTypeIndex >= 0) {
-          let mimeType = injectableMimeTypes[mimeTypeIndex];
-          let injectedCode = `<script>(
-            ${hookGeo}
-          )();<\/script>`;
-    
-          let parser = new DOMParser();
-          let xmlDoc;
-          if (mimeType.useXMLparser === true) {
-            xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
-          } else {
-            xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
-          }
-
-          if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
-            xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
-    
-            if (mimeType.useXMLparser === true) {
-              args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
-            } else {
-              args[0][0] = xmlDoc.documentElement.outerHTML;
-            }
-          }
-        }
-      }
-
-      return instantiate(_Blob, args); // arguments?
-    }
-
-    // Copy props and methods
-    let propNames = Object.getOwnPropertyNames(_Blob);
-    for (let i = 0; i < propNames.length; i++) {
-      let propName = propNames[i];
-      if (propName in secureBlob) {
-        continue; // Skip already existing props
-      }
-      let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
-      Object.defineProperty(secureBlob, propName, desc);
-    }
-
-    secureBlob.prototype = _Blob.prototype;
-    return secureBlob;
-  }(Blob);
-
-  window.addEventListener('message', function (event) {
-    if (event.source !== window) {
-      return;
-    }
-    const message = event.data;
-    switch (message.method) {
-      case 'updateLocation':
-        if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
-          hookedObj.genLat = message.info.coords.lat;
-          hookedObj.genLon = message.info.coords.lon;
-          hookedObj.fakeGeo = message.info.fakeIt;
-        }
-        break;
-      default:
-        break;
-    }
-  }, false);
-  //]]>
-}hookGeo();})()</script>
-<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/">
-
-<link rel="stylesheet" href="./css/jemdoc.css" type="text/css">
-<link rel="stylesheet" href="./css/jemdoc(1).css" type="text/css">
-<link rel="stylesheet" href="./css/myMiddle.css" type="text/css">
-<title>Zhiqi Wang</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhiqi Wang</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body data-new-gr-c-s-check-loaded="14.1052.0" data-gr-ext-installed="">
-<div id="layout-content">
-<table class="imgtable">
-  <tbody>
-    <tr>
-      <td align="left">
-        <h1>Zhiqi Wang [王之祺]</h1>
-        <p><b>Ph.D.</b>  </p>
-        <p><a href="http://www.cse.cuhk.edu.hk/" target="“blank”">Department of Computer Science and Engineering</a> <br>
-        <a href="http://www.cuhk.edu.hk/english/index.html" target="“blank”">The Chinese University of Hong Kong</a> <br>
-        <b>Email</b>:867245430@qq.com<br></p>
-        <p><a href="https://scholar.google.com/citations?user=QPrMebAAAAAJ&hl=en" target="&lt;u&gt;blank"><img src="./imgs/scholar.png" height="30"></a> <a href="https://github.com/naivewong" target="&lt;u&gt;blank"><img src="./imgs/git.png" height="30"></a></p>
-        <p><b><i>“一个人的命运啊，当然要靠自我奋斗，但是也要考虑到&nbsp;</i></b></p>
-        <p><b><i>历史的进程。”</i></b></p>
-      </td>
-      <td>
-        <!-- <img src="./imgs/fujiq.jpg" alt="" width="450px">&nbsp; -->
-        <img src="./imgs/photo1.jpg" alt="" width="200px">&nbsp;
-        <!-- <img src="./imgs/fujisan.jpg" alt="" width="200px">&nbsp; -->
-      </td>
-    </tr>
-  </tbody>
-</table>
-<h2>Biography</h2>
-<p>Education</p>
-<ul>
-  <li>
-    <div>
-      <div style="float:left">Ph.D., Computer Science and Engineering, CUHK</div>
-      <div style="float:right">2019 - 2023</div>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Zhiqi Wang</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="gallery.html" class="nav-link">Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="profile-info">
+                    <h1 class="name">Zhiqi Wang <span class="name-cn">[王之祺]</span></h1>
+                    <p class="title">Ph.D.</p>
+                    <p class="affiliation">
+                        <a href="http://www.cse.cuhk.edu.hk/" target="_blank">Department of Computer Science and Engineering</a><br>
+                        <a href="http://www.cuhk.edu.hk/english/index.html" target="_blank">The Chinese University of Hong Kong</a>
+                    </p>
+                    <p class="email">
+                        <strong>Email:</strong> <a href="mailto:867245430@qq.com">867245430@qq.com</a>
+                    </p>
+                    <div class="social-links">
+                        <a href="https://scholar.google.com/citations?user=QPrMebAAAAAJ&hl=en" target="_blank" class="social-link" title="Google Scholar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/>
+                            </svg>
+                            <span>Google Scholar</span>
+                        </a>
+                        <a href="https://github.com/naivewong" target="_blank" class="social-link" title="GitHub">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <blockquote class="quote">
+                        "一个人的命运啊，当然要靠自我奋斗，但是也要考虑到历史的进程。"
+                    </blockquote>
+                </div>
+                <div class="profile-photo">
+                    <img src="./imgs/photo1.jpg" alt="Zhiqi Wang" class="photo">
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Biography Section -->
+            <section class="section">
+                <h2 class="section-title">Biography</h2>
+                <div class="section-content">
+                    <h3 class="subsection-title">Education</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-title">Ph.D., Computer Science and Engineering, CUHK</span>
+                                    <span class="timeline-date">2019 - 2023</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-title">B.Eng., with First Class Honor, Computer Engineering, CUHK</span>
+                                    <span class="timeline-date">2014 - 2019</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="subsection-title">Research Interests</h3>
+                    <ul class="research-list">
+                        <li>Big data systems: timeseries management system and databases.</li>
+                        <li>Storage engines: LSM-tree-based key-value stores.</li>
+                        <li>File systems and in-storage computing.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Publications Section -->
+            <section class="section">
+                <h2 class="section-title">Publications</h2>
+                <div class="section-content">
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">MirrorKV: An Efficient Key-Value Store on Hybrid Cloud Storage with Balanced Performance of Compaction and Querying</h3>
+                            <p class="publication-authors"><strong>Z. Wang</strong>, and Z. Shao</p>
+                            <p class="publication-venue">The 43rd ACM SIGMOD International Conference on Management of Data (<strong>SIGMOD 2024</strong>)(CCF-A)</p>
+                            <div class="publication-links">
+                                <a href="https://dl.acm.org/doi/10.1145/3626736" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">ForestTI: A Scalable Inverted-Index-Oriented Timeseries Management System with Flexible Memory Efficiency</h3>
+                            <p class="publication-authors"><strong>Z. Wang</strong>, and Z. Shao</p>
+                            <p class="publication-venue">The 42nd ACM SIGMOD International Conference on Management of Data (<strong>SIGMOD 2023</strong>)(CCF-A)</p>
+                            <div class="publication-links">
+                                <a href="https://github.com/naivewong/forestti" target="_blank" class="pub-link">code</a>
+                                <a href="https://dl.acm.org/doi/10.1145/3589260" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">TimeUnion: An Efficient Architecture with Unified Data Model for Timeseries Management Systems on Hybrid Cloud Storage</h3>
+                            <p class="publication-authors"><strong>Z. Wang</strong>, and Z. Shao</p>
+                            <p class="publication-venue">The 41st ACM SIGMOD International Conference on Management of Data (<strong>SIGMOD 2022</strong>)(CCF-A)</p>
+                            <div class="publication-links">
+                                <a href="https://github.com/naivewong/timeunion" target="_blank" class="pub-link">code</a>
+                                <a href="https://dl.acm.org/doi/10.1145/3514221.3526175" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">Heracles: An Efficient Storage Model and Data Flushing for Performance Monitoring Timeseries</h3>
+                            <p class="publication-authors"><strong>Z. Wang</strong>, J. Xue, and Z. Shao</p>
+                            <p class="publication-venue">The 47th International Conference on Very Large Data Bases (<strong>VLDB 2021</strong>)(CCF-A), Volume 14(6), 1080-1092</p>
+                            <div class="publication-links">
+                                <a href="https://github.com/naivewong/heracles" target="_blank" class="pub-link">code</a>
+                                <a href="https://www.vldb.org/pvldb/vol14/p1080-wang.pdf" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">A Spatio-Temporal Series Data Model with Efficient Indexing and Layout for Cloud-Based Trajectory Data Management</h3>
+                            <p class="publication-authors">Y. Guo, <strong>Z. Wang</strong>, J. Xue, and Z. Shao</p>
+                            <p class="publication-venue">The 40th International Conference on Data Engineering (<strong>ICDE 2024</strong>)(CCF-A)</p>
+                            <div class="publication-links">
+                                <span class="pub-link disabled">code</span>
+                                <span class="pub-link disabled">paper</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">Lightning Talk: Model, Framework and Integration for In-Storage Computing with Computational SSDs</h3>
+                            <p class="publication-authors">T. Wang, J. Xue, Z. Du, <strong>Z. Wang</strong>, Y. Cui, and Z. Shao</p>
+                            <p class="publication-venue">The 60th ACM/IEEE Design Automation Conference (<strong>DAC 2023</strong>)(CCF-A)(invited paper)</p>
+                            <div class="publication-links">
+                                <a href="https://doi.org/10.1109/DAC56929.2023.10247955" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">BSCache: A Brisk Semantic Caching Scheme for Cloud-based Performance Monitoring Timeseries Systems</h3>
+                            <p class="publication-authors">K. Zhang, <strong>Z. Wang</strong>, and Z. Shao</p>
+                            <p class="publication-venue">Proceedings of the 51st International Conference on Parallel Processing (<strong>ICPP 2022</strong>)(CCF-B)</p>
+                            <div class="publication-links">
+                                <a href="https://github.com/kaizhang15/BSCache" target="_blank" class="pub-link">code</a>
+                                <a href="https://dl.acm.org/doi/abs/10.1145/3545008.3546183" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication-item">
+                        <div class="publication-content">
+                            <h3 class="publication-title">TagTree: Global Tagging Index with Efficient Querying for Time Series Databases</h3>
+                            <p class="publication-authors">J. Xue, <strong>Z. Wang</strong>, and Z. Shao</p>
+                            <p class="publication-venue">The 36th IEEE International Parallel & Distributed Processing Symposium (<strong>IPDPS 2022</strong>)(CCF-B)</p>
+                            <div class="publication-links">
+                                <a href="https://github.com/Jimx-/tagtree" target="_blank" class="pub-link">code</a>
+                                <a href="https://ieeexplore.ieee.org/abstract/document/9820720" target="_blank" class="pub-link">paper</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Working Experience Section -->
+            <section class="section">
+                <h2 class="section-title">Working Experience</h2>
+                <div class="section-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-title">Postdoctoral Fellow in CUHK</span>
+                                    <span class="timeline-date">11/2023 - 07/2024</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-title">Huawei Cloud Database Innovation Lab (internship)</span>
+                                    <span class="timeline-date">06/2022 - 08/2022</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="timeline-title">Google Summer of Code in Prometheus (internship)</span>
+                                    <span class="timeline-date">06/2019 - 08/2019</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Research Experience Section -->
+            <section class="section">
+                <h2 class="section-title">Research Experience</h2>
+                <div class="section-content">
+                    <div class="research-area">
+                        <h3 class="subsection-title">Big Data Systems</h3>
+                        <div class="research-item">
+                            <h4 class="research-item-title">Timeseries Management Systems</h4>
+                            <p>A thorough research on the main design decisions of the timeseries management systems, including the data model, memory data management, and persistent data management.</p>
+                            <ul class="research-details">
+                                <li><strong>Data model:</strong> To solve the data redundancy issue of the timeseries data from the same data source, we propose a unified data model for both tags and data samples of timeseries, with a novel compression mechanism and a two-level indexing design.</li>
+                                <li><strong>Memory data management:</strong> To mitigate the memory overhead and maintain more timeseries with limited memory, we design a flexible inverted index that can dynamically adapt its structure to the memory pressure.</li>
+                                <li><strong>Persistent data management:</strong> To achieve high insertion throughput of big timeseries data, we design a dynamic time-partitioned LSM-tree with high insertion throughput, decent space efficiency, and efficient out-of-order data handling.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="research-area">
+                        <h3 class="subsection-title">Storage Engines</h3>
+                        <div class="research-item">
+                            <h4 class="research-item-title">LSM-Tree-Based Key-Value Stores with Hybrid Cloud Storage</h4>
+                            <p>LSM-tree-based key-value stores are widely used as the storage engines of big data systems. As the data volume scales up, it is a natural trend to deploy the system on the cloud. However, the existing LSM-tree designs can not adapt to cloud storage because of the huge performance gap. We design MirrorKV with a balanced read/write performance which separates keys and values into two mirrored LSM-trees for better data locality and read performance, and designs different compaction mechanisms for fast and slow storage to improve write performance.</p>
+                        </div>
+                    </div>
+
+                    <div class="research-area">
+                        <h3 class="subsection-title">File Systems and In-Storage Computing</h3>
+                        <div class="research-item">
+                            <h4 class="research-item-title">A Monolithic Software/Hardware Co-Design Key-Value File System</h4>
+                            <p>To mitigate the metadata manipulation overhead and I/O amplification of the traditional file systems designed for block storage, we implement a file system with a key-value interface, which offloads the data management to our computational storage platform.</p>
+                            <ul class="research-details">
+                                <li><strong>Host-side key-value filesystem:</strong> It translates the file semantics (inode and page contents) to key-value commands correspondingly.</li>
+                                <li><strong>Host storage communication:</strong> We customize the Linux NVMe driver to bypass the Linux block layer and transmit the key-value commands.</li>
+                                <li><strong>Storage-side design:</strong> We carefully design the flash translation layer (FTL) to handle the received key-value commands and manage the physical area of the SSD.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Awards Section -->
+            <section class="section">
+                <h2 class="section-title">Awards</h2>
+                <div class="section-content">
+                    <ul class="awards-list">
+                        <li>Dean's List of Faculty of Engineering, CUHK: 2016-2017, 2018-2019</li>
+                        <li>CUHK New Asia College Scholarship in 2018</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Teaching Experience Section -->
+            <section class="section">
+                <h2 class="section-title">Teaching Experience</h2>
+                <div class="section-content">
+                    <p class="teaching-course"><strong>CSCI3150: Introduction to Operating Systems</strong></p>
+                    <ul class="teaching-list">
+                        <li>Fall 2019</li>
+                        <li>Spring, Fall 2020</li>
+                        <li>Spring, Fall 2021</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Professional Experience Section -->
+            <section class="section">
+                <h2 class="section-title">Professional Experience</h2>
+                <div class="section-content">
+                    <div class="professional-item">
+                        <h3 class="subsection-title">Participation & Talks</h3>
+                        <ul class="professional-list">
+                            <li>SIGMOD 2024, Santiago, Chile</li>
+                            <li>SIGMOD 2023, Seattle, WA, USA. Remote participation</li>
+                            <li>SIGMOD 2022, Philadelphia, PA, USA. Remote participation</li>
+                            <li>VLDB 2021, Copenhagen, Denmark. Remote participation</li>
+                        </ul>
+                    </div>
+
+                    <div class="professional-item">
+                        <h3 class="subsection-title">External Reviewer</h3>
+                        <div class="reviewer-section">
+                            <h4>Journal</h4>
+                            <ul class="professional-list">
+                                <li>ACM Transactions on Database Systems (TODS)</li>
+                                <li>IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)</li>
+                            </ul>
+                        </div>
+                        <div class="reviewer-section">
+                            <h4>Conference</h4>
+                            <ul class="professional-list">
+                                <li>Design Automation Conference (DAC)</li>
+                                <li>International Conference on Computer Design (ICCD)</li>
+                                <li>Design Automation and Test in Europe Conference (DATE)</li>
+                                <li>International Conference on Computer Aided Design (ICCAD)</li>
+                                <li>Conference on Languages, Compilers, and Tools for Embedded Systems (LCTES)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Zhiqi Wang. All rights reserved.</p>
+        </footer>
     </div>
-  </li>
-  <li>
-    <div>
-      <div style="float:left">B.Eng., with First Class Honor, Computer Engineering, CUHK</div>
-      <div style="float:right">2014 - 2019</div>
-    </div>
-  </li>
-</ul>
-My research includes -</p>
-<ul>
-  <li>
-    Big data systems: timeseries management system and databases.
-  </li>
-  <li>
-    Storage engines: LSM-tree-based key-value stores.
-  </li>
-  <li>
-    File systems and in-storage computing.
-  </li>
-</ul>
 
-<!-- <b><i>I am currently in the job market.</i></b> -->
-
-<h2>Publications</h2>
-<ul>
-  <li>
-    MirrorKV: An Efficient Key-Value Store on Hybrid Cloud Storage with Balanced Performance of Compaction and Querying. <br/> 
-    <b>Z. Wang</b>, and Z. Shao <br/> 
-    <i>The 43rd ACM SIGMOD International Conference on Management of Data (<b>SIGMOD 2024</b>)(CCF-A).</i> <br/>
-    [<a href="https://dl.acm.org/doi/10.1145/3626736" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    ForestTI: A Scalable Inverted-Index-Oriented Timeseries Management System with Flexible Memory Efficiency. <br/> 
-    <b>Z. Wang</b>, and Z. Shao <br/> 
-    <i>The 42nd ACM SIGMOD International Conference on Management of Data (<b>SIGMOD 2023</b>)(CCF-A).</i> <br/>
-    [<a href="https://github.com/naivewong/forestti" target="“blank”">code</a>] [<a href="https://dl.acm.org/doi/10.1145/3589260" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    TimeUnion: An Efficient Architecture with Unified Data Model for Timeseries Management Systems on Hybrid Cloud Storage. <br/> 
-    <b>Z. Wang</b>, and Z. Shao <br/> 
-    <i>The 41st ACM SIGMOD International Conference on Management of Data (<b>SIGMOD 2022</b>)(CCF-A).</i> <br/>
-    [<a href="https://github.com/naivewong/timeunion" target="“blank”">code</a>] [<a href="https://dl.acm.org/doi/10.1145/3514221.3526175" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    Heracles: An Efficient Storage Model and Data Flushing for Performance Monitoring Timeseries. <br/> 
-    <b>Z. Wang</b>, J. Xue, and Z. Shao <br/> 
-    <i>The 47th International Conference on Very Large Data Bases (<b>VLDB 2021</b>)(CCF-A), Volume 14(6), 1080-1092.</i> <br/>
-    [<a href="https://github.com/naivewong/heracles" target="“blank”">code</a>] [<a href="https://www.vldb.org/pvldb/vol14/p1080-wang.pdf" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    A Spatio-Temporal Series Data Model with Efficient Indexing and Layout for Cloud-Based Trajectory Data Management. <br/> 
-    Y. Guo, <b>Z. Wang</b>, J. Xue, and Z. Shao <br/> 
-    <i>The 40th International Conference on Data Engineering (<b>ICDE 2024</b>)(CCF-A).</i> <br/>
-    [<a>code</a>] [<a>paper</a>] <br/><br/>
-  </li>
-  <li>
-    Lightning Talk: Model, Framework and Integration for In-Storage Computing with Computational SSDs.</b> <br/> 
-    T. Wang, J. Xue, Z. Du, <b>Z. Wang</b>, Y. Cui, and Z. Shao <br/> 
-    <i>The 60th ACM/IEEE Design Automation Conference (<b>DAC 2023</b>)(CCF-A)(invited paper).</i> <br/>
-    [<a href="https://doi.org/10.1109/DAC56929.2023.10247955" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    BSCache: A Brisk Semantic Caching Scheme for Cloud-based Performance Monitoring Timeseries Systems. <br/> 
-    K. Zhang, <b>Z. Wang</b>, and Z. Shao <br/> 
-    <i>Proceedings of the 51st International Conference on Parallel Processing (<b>ICPP 2022</b>)(CCF-B).</i> <br/>
-    [<a href="https://github.com/kaizhang15/BSCache" target="“blank”">code</a>] [<a href="https://dl.acm.org/doi/abs/10.1145/3545008.3546183" target="“blank”">paper</a>] <br/><br/>
-  </li>
-  <li>
-    TagTree: Global Tagging Index with Efficient Querying for Time Series Databases. <br/>
-    J. Xue, <b>Z. Wang</b>, and Z. Shao <br/> 
-    <i>The 36th IEEE International Parallel & Distributed Processing Symposium (<b>IPDPS 2022</b>)(CCF-B).</i> <br/>
-    [<a href="https://github.com/Jimx-/tagtree" target="“blank”">code</a>] [<a href="https://ieeexplore.ieee.org/abstract/document/9820720" target="“blank”">paper</a>] <br/><br/>
-  </li>
-</ul>
-
-<h2>Working Experience</h2>
-<ul>
-  <li>
-    <div>
-      <div style="float:left">Postdoctoral Fellow in CUHK</div>
-      <div style="float:right">11/2023 - 07/2024</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div style="float:left">Huawei Cloud Database Innovation Lab (internship)</div>
-      <div style="float:right">06/2022 - 08/2022</div>
-    </div>
-  </li>
-  <li>
-    <div>
-      <div style="float:left">Google Summer of Code in Prometheus (internship)</div>
-      <div style="float:right">06/2019 - 08/2019</div>
-    </div>
-  </li>
-</ul>
-
-<h2>Research Experience</h2>
-<b>Big Data Systems</b> <br/>
-<!-- <i>Supported by Hong Kong General Research Fund: Optimizing Storage System Design for Spatial-Temporal Big Data (RGC Ref No. 15224918). Serve as the project participant.</i> -->
-<ul>
-  <li>
-    <b>Timeseries Management Systems</b> <br/>
-    A thorough research on the main design decisions of the timeseries management systems, including the data model, memory data management, and persistent data management.
-    <ul>
-      <li>Data model: To solve the data redundancy issue of the timeseries data from the same data source, we propose a unified data model for both tags and data samples of timeseries, with a novel compression mechanism and a two-level indexing design.</li>
-      <li>Memory data management: To mitigate the memory overhead and maintain more timeseries with limited memory, we design a flexible inverted index that can dynamically adapt its structure to the memory pressure.</li>
-      <li>Persistent data management: To achieve high insertion throughput of big timeseries data, we design a dynamic time-partitioned LSM-tree with high insertion throughput, decent space efficiency, and efficient out-of-order data handling.</li>
-    </ul>
-  </li>
-</ul>
-
-<b>Storage Engines</b> <br/>
-<!-- <i>Supported by Hong Kong General Research Fund: StoreLess: Eliminating Redundancy for LSM-tree based Key-Value Stores as Database Storage Engines in Internet Applications (RGC Ref No. 14219422). Serve as the project participant.</i> -->
-<ul>
-  <li>
-    <b>LSM-Tree-Based Key-Value Stores with Hybrid Cloud Storage</b> <br/>
-    LSM-tree-based key-value stores are widely used as the storage engines of big data systems. As the data volume scales up, it is a natural trend to deploy the system on the cloud. However, the existing LSM-tree designs can not adapt to cloud storage because of the huge performance gap. We design MirrorKV with a balanced read/write performance which separates keys and values into two mirrored LSM-trees for better data locality and read performance, and designs different compaction mechanisms for fast and slow storage to improve write performance.
-  </li>
-</ul>
-
-<b>File Systems and In-Storage Computing</b> <br/>
-<!-- <i>Supported by Hong Kong General Research Fund Project:  Data Model and Programming Framework for Function Offloading in In-SSD Computing (RGC Ref No. 14202123). Serve as the project participant.</i> -->
-<ul>
-  <li>
-    <b>A Monolithic Software/Hardware Co-Design Key-Value File System</b> <br/>
-    To mitigate the metadata manipulation overhead and I/O amplification of the traditional file systems designed for block storage, we implement a file system with a key-value interface, which offloads the data management to our computational storage platform.
-    <ul>
-      <li>Host-side key-value filesystem: It translates the file semantics (inode and page contents) to key-value commands correspondingly.</li>
-      <li>Host storage communication: We customize the Linux NVMe driver to bypass the Linux block layer and transmit the key-value commands.</li>
-      <li>Storage-side design: We carefully design the flash translation layer (FTL) to handle the received key-value commands and manage the physical area of the SSD.</li>
-    </ul>
-  </li>
-</ul>
-
-<h2>Awards</h2>
-<ul>
-  <li>
-    Dean's List of Faculty of Engineering, CUHK: 2016-2017, 2018-2019
-  </li>
-  <li>
-    CUHK New Asia College Scholarship in 2018
-  </li>
-</ul>
-
-<h2>Teaching Experience</h2>
-CSCI3150: Introduction to Operating Systems
-<ul>
-  <li>
-    Fall 2019
-  </li>
-  <li>
-    Spring, Fall 2020
-  </li>
-  <li>
-    Spring, Fall 2021
-  </li>
-</ul>
-
-<h2>Professional Experience</h2>
-<ul>
-  <li>
-    Participation & Talks
-    <ul>
-      <li>SIGMOD 2024, Santiago, Chile</li>
-      <li>SIGMOD 2023, Seattle, WA, USA. Remote participation</li>
-      <li>SIGMOD 2022, Philadelphia, PA, USA. Remote participation</li>
-      <li>VLDB 2021, Copenhagen, Denmark. Remote participation</li>
-    </ul>
-  </li>
-  <li>
-    External Reviewer
-    <ul>
-      <li>Journal</li>
-        <ul>
-          <li>ACM Transactions on Database Systems (TODS)</li>
-          <li>IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)</li>
-        </ul>
-      <li>Conference</li>
-        <ul>
-          <li>Design Automation Conference (DAC)</li>
-          <li>International Conference on Computer Design (ICCD)</li>
-          <li>Design Automation and Test in Europe Conference (DATE)</li>
-          <li>International Conference on Computer Aided Design (ICCAD)</li>
-          <li>Conference on Languages, Compilers, and Tools for Embedded Systems (LCTES)</li>
-        </ul>
-    </ul>
-  </li>
-</ul>
-
-</div>
-
-<iframe frameborder="0" scrolling="no" style="background-color: transparent; border: 0px; display: none;" src="./Qi SUN - The Chinese University of Hong Kong_files/saved_resource.html"></iframe><div id="GOOGLE_INPUT_CHEXT_FLAG" style="display: none;" input="" input_stat="{&quot;tlang&quot;:true,&quot;tsbc&quot;:true,&quot;pun&quot;:true,&quot;mk&quot;:true,&quot;ss&quot;:true}"></div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
+    <script src="./js/theme.js"></script>
+</body>
+</html>
