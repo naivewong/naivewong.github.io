@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "SF Pro Display", -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%); min-height: 100vh; padding: 30px 20px; }
+        .container { max-width: 820px; margin: 0 auto; background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 28px 20px; text-align: center; }
+        .header h1 { font-size: 26px; font-weight: 600; letter-spacing: 0.5px; }
+        .main-content { padding: 28px; }
+        .upload-section { margin-bottom: 24px; }
+        .section-title { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 14px; padding: 40px 30px; text-align: center; background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%); cursor: pointer; transition: all 0.3s ease; }
+        .drop-zone:hover { border-color: #0ea5e9; background: linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%); transform: scale(1.01); }
+        .drop-zone.drag-over { border-color: #10b981; background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%); border-style: solid; }
+        .drop-zone-icon { font-size: 52px; margin-bottom: 14px; opacity: 0.7; }
+        .drop-zone-text { color: #64748b; font-size: 14px; line-height: 1.8; }
+        .upload-buttons { display: flex; gap: 12px; margin-top: 14px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45); }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; border-color: #cbd5e1; }
+        .btn-danger { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4); }
+        .btn-success { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .file-list-container { margin-top: 14px; }
+        .file-list { max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fafbfc; }
+        .file-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: all 0.2s ease; }
+        .file-item:last-child { border-bottom: none; }
+        .file-item:hover { background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%); }
+        .file-item.selected { background: linear-gradient(90deg, #e0f2fe 0%, #bae6fd 100%); }
+        .file-item-icon { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #e2e8f0; }
+        .file-item-name { flex: 1; font-size: 13px; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-item-size { font-size: 12px; color: #94a3b8; margin-left: 12px; font-weight: 500; }
+        .file-item-remove { width: 22px; height: 22px; border: none; background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); color: white; border-radius: 50%; cursor: pointer; font-size: 12px; margin-left: 12px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.2s ease; }
+        .file-item:hover .file-item-remove { opacity: 1; }
+        .hint-text { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+        .settings-section { margin-bottom: 24px; }
+        .setting-group { margin-bottom: 18px; }
+        .setting-label { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 10px; display: block; }
+        .setting-row { display: flex; align-items: center; gap: 12px; }
+        .slider { flex: 1; height: 8px; -webkit-appearance: none; appearance: none; background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%); border-radius: 8px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); cursor: pointer; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); transition: transform 0.2s; }
+        .slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        .slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); cursor: pointer; border: none; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); }
+        .value-input { width: 70px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 10px; text-align: center; font-size: 14px; font-weight: 500; background: #fafbfc; transition: all 0.2s ease; }
+        .value-input:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .value-suffix { font-size: 14px; color: #64748b; font-weight: 500; }
+        .size-preview { font-size: 13px; color: #0ea5e9; min-width: 100px; font-weight: 600; }
+        .error-text { font-size: 12px; color: #ef4444; min-width: 80px; font-weight: 500; }
+        .action-buttons { display: flex; justify-content: center; gap: 16px; margin: 24px 0; }
+        .btn-large { padding: 14px 36px; font-size: 15px; }
+        .info-section { margin-bottom: 24px; }
+        .info-box { background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; min-height: 100px; }
+        .info-line { font-size: 13px; color: #475569; margin-bottom: 8px; line-height: 1.6; }
+        .info-line:last-child { margin-bottom: 0; }
+        .info-label { color: #64748b; font-weight: 500; }
+        .status-bar { background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%); padding: 12px 24px; border-top: 1px solid #e2e8f0; }
+        .status-text { font-size: 13px; color: #64748b; font-weight: 500; }
+        .progress-container { display: none; margin-top: 16px; }
+        .progress-container.active { display: block; }
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 50%, #0ea5e9 100%); background-size: 200% 100%; width: 0%; transition: width 0.3s ease; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .progress-text { font-size: 12px; color: #64748b; margin-top: 8px; text-align: center; font-weight: 500; }
+        .empty-state { text-align: center; padding: 24px; color: #94a3b8; font-size: 13px; }
+        #fileInput { display: none; }
+        .lang-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; z-index: 10; }
+        .lang-btn:hover { background: rgba(255,255,255,0.3); }
+        .header { position: relative; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="lang-btn" id="langSwitch" onclick="toggleLanguage()">中文</button>
+            <h1>⚡ <span data-i18n="title">Image Compressor</span></h1>
+        </div>
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="section-title" data-i18n="uploadTitle">Image Upload</div>
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <div class="drop-zone-text" data-i18n="dropText">Drag images here<br>or click to select files<br>Supports JPG, PNG, BMP, WEBP formats</div>
+                </div>
+                <input type="file" id="fileInput" multiple accept="image/*">
+                <div class="upload-buttons">
+                    <button class="btn btn-primary" id="selectBtn" data-i18n="selectImages">Select Images</button>
+                    <button class="btn btn-secondary" id="clearBtn" data-i18n="clearList">Clear List</button>
+                </div>
+                <div class="file-list-container">
+                    <div class="file-list" id="fileList"><div class="empty-state" data-i18n="noImages">No images</div></div>
+                    <div class="hint-text" data-i18n="clickHint">Tip: Click list item to view image info</div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="section-title" data-i18n="settings">Settings</div>
+                <div class="setting-group">
+                    <label class="setting-label" data-i18n="resizeScale">Resize Scale:</label>
+                    <div class="setting-row">
+                        <input type="range" class="slider" id="resizeSlider" min="10" max="100" value="100">
+                        <input type="number" class="value-input" id="resizeInput" value="100" min="10" max="100">
+                        <span class="value-suffix">%</span>
+                        <span class="error-text" id="resizeError"></span>
+                        <span class="size-preview" id="sizePreview"></span>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label" data-i18n="qualityCompress">Quality Compression:</label>
+                    <div class="setting-row">
+                        <input type="range" class="slider" id="compressSlider" min="1" max="100" value="100">
+                        <input type="number" class="value-input" id="compressInput" value="100" min="1" max="100">
+                        <span class="value-suffix">%</span>
+                        <span class="error-text" id="compressError"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-success btn-large" id="generateBtn" data-i18n="generateCompressed">Generate Compressed Image</button>
+                <button class="btn btn-primary btn-large" id="replaceBtn" data-i18n="replaceOriginal">Replace Original File</button>
+            </div>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText" data-i18n="processing">Processing...</div>
+            </div>
+            <div class="info-section">
+                <div class="section-title" data-i18n="imageInfo">Image Info</div>
+                <div class="info-box" id="infoBox"><div class="info-line" data-i18n="selectToView">Select an image to view info</div></div>
+            </div>
+        </div>
+        <div class="status-bar"><span class="status-text" id="statusText" data-i18n="readyStatus">Ready - Drag or click above to select images</span></div>
+    </div>
+    <script>
+        // ====== Language System ======
+        var translations = {
+            en: {
+                title: 'Image Compressor',
+                uploadTitle: 'Image Upload',
+                dropText: 'Drag images here<br>or click to select files<br>Supports JPG, PNG, BMP, WEBP formats',
+                dropTextActive: 'Release to add images',
+                selectImages: 'Select Images',
+                clearList: 'Clear List',
+                noImages: 'No images',
+                clickHint: 'Tip: Click list item to view image info',
+                settings: 'Settings',
+                resizeScale: 'Resize Scale:',
+                qualityCompress: 'Quality Compression:',
+                generateCompressed: 'Generate Compressed Image',
+                replaceOriginal: 'Replace Original File',
+                processing: 'Processing...',
+                processingFile: 'Processing: ',
+                complete: 'Complete!',
+                imageInfo: 'Image Info',
+                selectToView: 'Select an image to view info',
+                readyStatus: 'Ready - Drag or click above to select images',
+                filesSelected: ' files selected',
+                cleared: 'Cleared - Click above to select images',
+                selectImageFirst: 'Please select images first!',
+                noNeedProcess: 'Scale is 100% and quality is 100%, no processing needed!',
+                fileName: 'File:',
+                originalSize: 'Original Size:',
+                originalFileSize: 'Original File Size:',
+                pixels: ' pixels',
+                resizedSize: 'Resized Size:',
+                compressionQuality: 'Compression Quality:',
+                completeProcessed: 'Complete! Successfully processed ',
+                images: ' images',
+                rangeError: 'Range: ',
+                rangeErrorResize: '10-100',
+                rangeErrorCompress: '1-100'
+            },
+            zh: {
+                title: '图片压缩工具',
+                uploadTitle: '图片上传',
+                dropText: '拖拽图片到此处<br>或点击选择文件<br>支持 JPG、PNG、BMP、WEBP 格式',
+                dropTextActive: '释放鼠标添加图片',
+                selectImages: '选择图片',
+                clearList: '清空列表',
+                noImages: '暂无图片',
+                clickHint: '提示: 点击列表项查看图片信息',
+                settings: '设置',
+                resizeScale: '尺寸缩放:',
+                qualityCompress: '质量压缩:',
+                generateCompressed: '生成压缩图片',
+                replaceOriginal: '替换原文件',
+                processing: '处理中...',
+                processingFile: '正在处理: ',
+                complete: '处理完成！',
+                imageInfo: '图片信息',
+                selectToView: '请选择图片查看信息',
+                readyStatus: '就绪 - 拖拽或点击上方区域选择图片',
+                filesSelected: ' 个文件已选择',
+                cleared: '已清空 - 点击上方区域或按钮选择图片',
+                selectImageFirst: '请先选择图片文件！',
+                noNeedProcess: '缩放比例为100%且压缩质量为100%，无需处理！',
+                fileName: '文件:',
+                originalSize: '原始尺寸:',
+                originalFileSize: '原始大小:',
+                pixels: ' 像素',
+                resizedSize: '缩放后尺寸:',
+                compressionQuality: '压缩质量:',
+                completeProcessed: '完成！成功处理 ',
+                images: ' 张图片',
+                rangeError: '范围: ',
+                rangeErrorResize: '10-100',
+                rangeErrorCompress: '1-100'
+            }
+        };
+
+        var currentLang = 'en';
+
+        function applyTranslations() {
+            var t = translations[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerHTML = t[key];
+            });
+            document.getElementById('langSwitch').textContent = currentLang === 'en' ? '中文' : 'English';
+            document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+            document.title = t.title;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            applyTranslations();
+            updateFileList();
+            if (currentImage) showFileInfo(currentImage);
+        }
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // ====== Core Variables ======
+        var selectedFiles = [], currentIndex = -1, currentImage = null;
+        var dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput');
+        var fileList = document.getElementById('fileList'), selectBtn = document.getElementById('selectBtn');
+        var clearBtn = document.getElementById('clearBtn'), resizeSlider = document.getElementById('resizeSlider');
+        var resizeInput = document.getElementById('resizeInput'), resizeError = document.getElementById('resizeError');
+        var compressSlider = document.getElementById('compressSlider'), compressInput = document.getElementById('compressInput');
+        var compressError = document.getElementById('compressError'), sizePreview = document.getElementById('sizePreview');
+        var generateBtn = document.getElementById('generateBtn'), replaceBtn = document.getElementById('replaceBtn');
+        var infoBox = document.getElementById('infoBox'), statusText = document.getElementById('statusText');
+        var progressContainer = document.getElementById('progressContainer'), progressFill = document.getElementById('progressFill');
+        var progressText = document.getElementById('progressText');
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) { fileList.innerHTML = '<div class="empty-state">' + t('noImages') + '</div>'; return; }
+            fileList.innerHTML = selectedFiles.map(function(file, index) {
+                return '<div class="file-item ' + (index === currentIndex ? 'selected' : '') + '" data-index="' + index + '">' +
+                    '<img class="file-item-icon" src="' + file.thumbnail + '" alt="">' +
+                    '<span class="file-item-name">' + file.name + '</span>' +
+                    '<span class="file-item-size">' + formatFileSize(file.size) + '</span>' +
+                    '<button class="file-item-remove" data-index="' + index + '">×</button></div>';
+            }).join('');
+            document.querySelectorAll('.file-item').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('file-item-remove')) selectFile(parseInt(item.dataset.index));
+                });
+            });
+            document.querySelectorAll('.file-item-remove').forEach(function(btn) {
+                btn.addEventListener('click', function(e) { e.stopPropagation(); removeFile(parseInt(btn.dataset.index)); });
+            });
+        }
+
+        function selectFile(index) { if (index >= 0 && index < selectedFiles.length) { currentIndex = index; updateFileList(); showFileInfo(selectedFiles[index]); } }
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            if (currentIndex >= selectedFiles.length) currentIndex = selectedFiles.length - 1;
+            updateFileList();
+            if (selectedFiles.length > 0 && currentIndex >= 0) showFileInfo(selectedFiles[currentIndex]); else resetInfo();
+            statusText.textContent = selectedFiles.length + t('filesSelected');
+        }
+
+        function showFileInfo(file) {
+            currentImage = file;
+            var resizeValue = parseInt(resizeSlider.value), compressValue = parseInt(compressSlider.value);
+            var info = '<div class="info-line"><span class="info-label">' + t('fileName') + '</span> ' + file.name + '</div>' +
+                '<div class="info-line"><span class="info-label">' + t('originalSize') + '</span> ' + file.width + ' x ' + file.height + t('pixels') + '</div>' +
+                '<div class="info-line"><span class="info-label">' + t('originalFileSize') + '</span> ' + formatFileSize(file.size) + '</div>';
+            if (resizeValue < 100) { var scale = resizeValue / 100; info += '<div class="info-line"><span class="info-label">' + t('resizedSize') + '</span> ' + Math.round(file.width * scale) + ' x ' + Math.round(file.height * scale) + t('pixels') + '</div>'; }
+            if (compressValue < 100) info += '<div class="info-line"><span class="info-label">' + t('compressionQuality') + '</span> ' + compressValue + '%</div>';
+            infoBox.innerHTML = info;
+            updateSizePreview();
+        }
+
+        function resetInfo() { currentImage = null; infoBox.innerHTML = '<div class="info-line">' + t('selectToView') + '</div>'; sizePreview.textContent = ''; }
+        function updateSizePreview() {
+            if (!currentImage) { sizePreview.textContent = ''; return; }
+            var resizeValue = parseInt(resizeSlider.value);
+            if (resizeValue < 100) { var scale = resizeValue / 100; sizePreview.textContent = '→ ' + Math.round(currentImage.width * scale) + ' x ' + Math.round(currentImage.height * scale); }
+            else sizePreview.textContent = '';
+        }
+
+        function handleFiles(files) {
+            var validTypes = ['image/jpeg', 'image/png', 'image/bmp', 'image/webp'];
+            Array.from(files).forEach(function(file) {
+                if (validTypes.indexOf(file.type) === -1) return;
+                if (selectedFiles.some(function(f) { return f.name === file.name && f.size === file.size; })) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        selectedFiles.push({ file: file, name: file.name, size: file.size, type: file.type, width: img.width, height: img.height, thumbnail: e.target.result, dataUrl: e.target.result });
+                        updateFileList();
+                        if (selectedFiles.length === 1) selectFile(0);
+                        statusText.textContent = selectedFiles.length + t('filesSelected');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function compressImage(fileData, resizeScale, quality, replace) {
+            return new Promise(function(resolve) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas'), width = img.width, height = img.height;
+                    if (resizeScale < 1) { width = Math.round(width * resizeScale); height = Math.round(height * resizeScale); }
+                    canvas.width = width; canvas.height = height;
+                    var ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    var dataUrl = canvas.toDataURL(fileData.type, quality / 100);
+                    resolve({ dataUrl: dataUrl, name: replace ? fileData.name : fileData.name.replace(/\.(jpg|jpeg|png|bmp|webp)$/i, '_compressed.$1'), width: width, height: height });
+                };
+                img.src = fileData.dataUrl;
+            });
+        }
+
+        async function processImages(replace) {
+            if (selectedFiles.length === 0) { alert(t('selectImageFirst')); return; }
+            var resizeValue = parseInt(resizeSlider.value), compressValue = parseInt(compressSlider.value);
+            if (resizeValue === 100 && compressValue === 100) { alert(t('noNeedProcess')); return; }
+            // 替换原文件模式直接处理，不弹窗确认
+            generateBtn.disabled = true;
+            progressContainer.classList.add('active'); progressFill.style.width = '0%';
+            var resizeScale = resizeValue / 100, quality = compressValue;
+            for (var i = 0; i < selectedFiles.length; i++) {
+                var fileData = selectedFiles[i];
+                progressText.textContent = t('processingFile') + fileData.name;
+                progressFill.style.width = ((i / selectedFiles.length) * 100) + '%';
+                var result = await compressImage(fileData, resizeScale, quality, replace);
+                var link = document.createElement('a'); link.href = result.dataUrl; link.download = result.name;
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                await new Promise(function(r) { setTimeout(r, 300); });
+            }
+            progressFill.style.width = '100%'; progressText.textContent = t('complete');
+            setTimeout(function() {
+                progressContainer.classList.remove('active');
+                generateBtn.disabled = false;
+                statusText.textContent = t('completeProcessed') + selectedFiles.length + t('images');
+            }, 1000);
+        }
+
+        dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+        dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+        dropZone.addEventListener('click', function() { fileInput.click(); });
+        fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); fileInput.value = ''; });
+        selectBtn.addEventListener('click', function() { fileInput.click(); });
+        clearBtn.addEventListener('click', function() { selectedFiles = []; currentIndex = -1; updateFileList(); resetInfo(); statusText.textContent = t('cleared'); });
+        resizeSlider.addEventListener('input', function(e) { resizeInput.value = e.target.value; resizeError.textContent = ''; updateSizePreview(); });
+        resizeInput.addEventListener('change', function(e) { var v = parseInt(e.target.value); if (isNaN(v) || v < 10 || v > 100) { resizeError.textContent = t('rangeError') + t('rangeErrorResize'); return; } resizeError.textContent = ''; resizeSlider.value = v; updateSizePreview(); });
+        compressSlider.addEventListener('input', function(e) { compressInput.value = e.target.value; compressError.textContent = ''; });
+        compressInput.addEventListener('change', function(e) { var v = parseInt(e.target.value); if (isNaN(v) || v < 1 || v > 100) { compressError.textContent = t('rangeError') + t('rangeErrorCompress'); return; } compressError.textContent = ''; compressSlider.value = v; });
+        generateBtn.addEventListener('click', function() { processImages(false); });
+        replaceBtn.addEventListener('click', function() { processImages(true); });
+
+        // Initialize translations
+        applyTranslations();
+    </script>
+</body>
+</html>

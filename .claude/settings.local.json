@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b \"C:\\\\Users\\\\86724\\\\Documents\\\\GitHub\\\\img_border_generator\\\\fonts\")",
+      "Bash(rm:*)"
+    ]
+  }
+}

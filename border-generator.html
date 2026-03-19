@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Border Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "SF Pro Display", -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%); min-height: 100vh; padding: 30px 20px; }
+        .container { max-width: 820px; margin: 0 auto; background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 28px 20px; text-align: center; position: relative; }
+        .header h1 { font-size: 26px; font-weight: 600; letter-spacing: 0.5px; }
+        .main-content { padding: 28px; }
+        .section-title { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 14px; padding: 40px 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%); }
+        .drop-zone:hover { border-color: #0ea5e9; background: linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%); transform: scale(1.01); }
+        .drop-zone.drag-over { border-color: #10b981; background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%); border-style: solid; }
+        .drop-zone-text { color: #64748b; font-size: 14px; line-height: 1.8; }
+        .drop-zone-icon { font-size: 52px; margin-bottom: 14px; opacity: 0.7; }
+        .btn-group { display: flex; gap: 12px; margin-top: 16px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45); }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; border-color: #cbd5e1; }
+        .btn-success { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .file-list { max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 16px; background: #fafbfc; }
+        .file-item { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; }
+        .file-item:last-child { border-bottom: none; }
+        .file-item:hover { background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%); }
+        .file-item.selected { background: linear-gradient(90deg, #e0f2fe 0%, #bae6fd 100%); }
+        .file-item-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; color: #334155; font-size: 13px; }
+        .file-item-size { color: #94a3b8; font-size: 12px; margin-left: 12px; font-weight: 500; }
+        .settings-row { display: flex; align-items: center; margin-bottom: 16px; }
+        .settings-row:last-child { margin-bottom: 0; }
+        .settings-label { width: 110px; color: #64748b; font-size: 13px; font-weight: 500; }
+        .settings-input { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fafbfc; transition: all 0.2s ease; }
+        .settings-input:focus { outline: none; border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .settings-select { padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fafbfc; min-width: 160px; cursor: pointer; transition: all 0.2s ease; }
+        .settings-select:focus { outline: none; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .toggle-switch { position: relative; display: inline-block; width: 52px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; transition: .3s ease; border-radius: 28px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; transition: .3s ease; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input:checked + .toggle-slider { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+        input:checked + .toggle-slider:before { transform: translateX(24px); }
+        .shortcut-hint { color: #94a3b8; font-size: 12px; margin-top: 12px; text-align: center; }
+        .shortcut-hint kbd { background: #f1f5f9; padding: 3px 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-family: inherit; margin: 0 2px; }
+        .action-buttons { display: flex; gap: 16px; justify-content: center; align-items: center; margin: 24px 0; }
+        .btn-hint { color: #94a3b8; font-size: 12px; }
+        .btn-large { padding: 14px 36px; font-size: 15px; }
+        .preview-container { background: linear-gradient(145deg, #334155 0%, #1e293b 100%); border-radius: 12px; min-height: 320px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: zoom-in; }
+        .preview-container canvas { max-width: 100%; max-height: 420px; display: block; cursor: zoom-in; }
+        .preview-placeholder { color: #94a3b8; text-align: center; cursor: default; }
+        .preview-placeholder > div:first-child { font-size: 56px; margin-bottom: 12px; opacity: 0.5; }
+        .preview-mode { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; pointer-events: none; }
+        .preview-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; pointer-events: none; }
+        .status-bar { background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%); padding: 12px 24px; border-top: 1px solid #e2e8f0; }
+        .status-text { font-size: 13px; color: #64748b; font-weight: 500; }
+        #fileInput { display: none; }
+        .progress-container { display: none; margin-top: 16px; }
+        .progress-container.active { display: block; }
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 50%, #0ea5e9 100%); background-size: 200% 100%; width: 0%; transition: width 0.3s ease; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .progress-text { font-size: 12px; color: #64748b; margin-top: 8px; text-align: center; font-weight: 500; }
+        @font-face { font-family: 'FangZhengKaiTi'; src: url('./fonts/FangZhengKaiTiJianTi-1.ttf') format('truetype'); }
+        @font-face { font-family: 'MyriadPro'; src: url('./fonts/MyriadPro-Regular-14.otf') format('opentype'); }
+        @font-face { font-family: 'Lato'; src: url('./fonts/Lato-LightItalic.ttf') format('truetype'); font-style: italic; font-weight: 300; }
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; cursor: zoom-out; }
+        .fullscreen-overlay img { max-width: 95%; max-height: 95%; object-fit: contain; }
+        .fullscreen-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; cursor: pointer; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 50%; }
+        .fullscreen-close:hover { background: rgba(255,255,255,0.3); }
+        .exif-info { margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 4px; font-size: 12px; color: #666; display: none; }
+        .exif-info.has-data { display: block; }
+        .lang-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; z-index: 10; }
+        .lang-btn:hover { background: rgba(255,255,255,0.3); }
+        .section { margin-bottom: 24px; }
+        .slider-row { display: flex; align-items: center; gap: 12px; }
+        .slider { flex: 1; height: 8px; -webkit-appearance: none; appearance: none; background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%); border-radius: 8px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); cursor: pointer; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); transition: transform 0.2s; }
+        .slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        .slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); cursor: pointer; border: none; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4); }
+        .slider-value { min-width: 50px; text-align: right; color: #0ea5e9; font-weight: 600; font-size: 13px; }
+        .slider-unit { color: #64748b; font-size: 12px; min-width: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="lang-btn" id="langSwitch" onclick="toggleLanguage()">中文</button>
+            <h1>⚡ <span data-i18n="title">Image Border Generator</span></h1>
+        </div>
+        <div class="main-content">
+            <div class="section">
+                <div class="section-title" data-i18n="uploadTitle">Image Upload</div>
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">🖼️</div>
+                    <div class="drop-zone-text" data-i18n="dropText">Drag images here<br>or click to select files<br>Supports JPG, PNG, BMP, GIF, WEBP formats</div>
+                </div>
+                <input type="file" id="fileInput" multiple accept="image/*">
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" data-i18n="selectImages">Select Images</button>
+                    <button class="btn btn-secondary" onclick="clearFiles()" data-i18n="clearList">Clear List</button>
+                </div>
+                <div class="file-list" id="fileList"></div>
+                <div class="exif-info" id="exifInfo"></div>
+                <div class="shortcut-hint"><span data-i18n="shortcutHint">Tips:</span> <kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="switchImage">switch image</span> | <kbd>V</kbd> <span data-i18n="togglePreview">toggle preview</span> | <kbd>Enter</kbd> <span data-i18n="generateImage">generate image</span></div>
+            </div>
+            <div class="section">
+                <div class="section-title" data-i18n="settings">Settings</div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="borderText">Border Text:</label>
+                    <input type="text" class="settings-input" id="borderText" value="" data-i18n-placeholder="borderTextPlaceholder">
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="font">Font:</label>
+                    <select class="settings-select" id="fontSelect" onchange="onFontChange()">
+                        <option value="FangZhengKaiTi" data-i18n="fontDefault">Default (FangZheng KaiTi)</option>
+                        <option value="Noto Sans SC">Noto Sans SC</option>
+                        <option value="Noto Serif SC">Noto Serif SC</option>
+                        <option value="Ma Shan Zheng">Ma Shan Zheng</option>
+                        <option value="ZCOOL XiaoWei">ZCOOL XiaoWei</option>
+                        <option value="ZCOOL QingKe HuangYou">ZCOOL QingKe HuangYou</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="showExif">Show EXIF:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showExif" onchange="onExifToggle()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="margin-left: 10px; color: #999; font-size: 12px;" data-i18n="exifHint">Camera parameters</span>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="cameraLogo">Camera Logo:</label>
+                    <select class="settings-select" id="logoSelect">
+                        <option value="auto" data-i18n="autoDetect">Auto Detect</option>
+                        <option value="" data-i18n="none">None</option>
+                        <option value="canon">Canon</option>
+                        <option value="nikon">Nikon</option>
+                        <option value="sony">Sony</option>
+                        <option value="fuji">Fujifilm</option>
+                        <option value="panasonic">Panasonic</option>
+                        <option value="olympus">Olympus</option>
+                        <option value="leica">Leica</option>
+                        <option value="pentax">Pentax</option>
+                        <option value="apple">Apple</option>
+                        <option value="samsung">Samsung</option>
+                        <option value="huawei">Huawei</option>
+                    </select>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="showLogoIcon">Show Logo Icon:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showLogoIcon" onchange="onExifToggle()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="margin-left: 10px; color: #999; font-size: 12px;" data-i18n="logoIconHint">Display brand icon next to model</span>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="photoShadow">Photo Shadow:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="photoShadow" onchange="onExifToggle()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="margin-left: 10px; color: #999; font-size: 12px;" data-i18n="shadowHint">Add drop shadow effect</span>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label" data-i18n="borderPadding">Border Padding:</label>
+                    <div class="slider-row">
+                        <span style="color: #64748b; font-size: 12px; min-width: 60px;" data-i18n="leftRight">Left/Right:</span>
+                        <input type="range" class="slider" id="borderLeftRight" min="0" max="25" value="0" oninput="updateBorderSlider('leftRight')">
+                        <span class="slider-value" id="borderLeftRightValue">0</span>
+                        <span class="slider-unit">%</span>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label"></label>
+                    <div class="slider-row">
+                        <span style="color: #64748b; font-size: 12px; min-width: 60px;" data-i18n="top">Top:</span>
+                        <input type="range" class="slider" id="borderTop" min="0" max="25" value="0" oninput="updateBorderSlider('top')">
+                        <span class="slider-value" id="borderTopValue">0</span>
+                        <span class="slider-unit">%</span>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <label class="settings-label"></label>
+                    <div class="slider-row">
+                        <span style="color: #64748b; font-size: 12px; min-width: 60px;" data-i18n="bottom">Bottom:</span>
+                        <input type="range" class="slider" id="borderBottom" min="0" max="25" value="0" oninput="updateBorderSlider('bottom')">
+                        <span class="slider-value" id="borderBottomValue">0</span>
+                        <span class="slider-unit">%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary btn-large" id="previewBtn" onclick="togglePreview()" data-i18n="previewEffect">Preview Effect</button>
+                <button class="btn btn-success btn-large" id="generateBtn" onclick="generateBorders()" data-i18n="generateBorder">Generate Border Image</button>
+            </div>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText" data-i18n="processing">Processing...</div>
+            </div>
+            <div class="section">
+                <div class="section-title" data-i18n="preview">Preview</div>
+                <div class="preview-container" id="previewContainer" onclick="openFullscreen()">
+                    <div class="preview-placeholder" id="previewPlaceholder">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🖼️</div>
+                        <div data-i18n="previewPlaceholder">Preview after selecting image</div>
+                    </div>
+                    <canvas id="previewCanvas" style="display: none;"></canvas>
+                    <div class="preview-mode" id="previewMode" style="display: none;" data-i18n="originalImage">Original</div>
+                    <div class="preview-hint" id="previewHint" style="display: none;" data-i18n="clickToEnlarge">Click to enlarge</div>
+                </div>
+            </div>
+        </div>
+        <div class="status-bar"><span class="status-text" id="statusBar" data-i18n="readyStatus">Ready - Drag or click above to select images</span></div>
+    </div>
+    <script>
+        // ====== Language System ======
+        const translations = {
+            en: {
+                title: 'Image Border Generator',
+                uploadTitle: 'Image Upload',
+                dropText: 'Drag images here<br>or click to select files<br>Supports JPG, PNG, BMP, GIF, WEBP formats',
+                dropTextActive: 'Release to add images',
+                selectImages: 'Select Images',
+                clearList: 'Clear List',
+                shortcutHint: 'Tips:',
+                switchImage: 'switch image',
+                togglePreview: 'toggle preview',
+                generateImage: 'generate image',
+                settings: 'Settings',
+                borderText: 'Border Text:',
+                borderTextPlaceholder: 'Enter border text',
+                font: 'Font:',
+                fontDefault: 'Default (FangZheng KaiTi)',
+                showExif: 'Show EXIF:',
+                exifHint: 'Camera parameters',
+                cameraLogo: 'Camera Logo:',
+                autoDetect: 'Auto Detect',
+                none: 'None',
+                showLogoIcon: 'Show Logo Icon:',
+                logoIconHint: 'Display brand icon next to model',
+                photoShadow: 'Photo Shadow:',
+                shadowHint: 'Add drop shadow effect',
+                borderPadding: 'Border Padding:',
+                leftRight: 'Left/Right:',
+                top: 'Top:',
+                bottom: 'Bottom:',
+                previewEffect: 'Preview Effect',
+                generateBorder: 'Generate Border Image',
+                preview: 'Preview',
+                previewPlaceholder: 'Preview after selecting image',
+                originalImage: 'Original',
+                borderEffect: 'Border Effect',
+                clickToEnlarge: 'Click to enlarge',
+                readyStatus: 'Ready - Drag or click above to select images',
+                filesSelected: 'files selected',
+                selectImageFirst: 'Please select an image first',
+                enterBorderText: 'Please enter border text',
+                cleared: 'Cleared',
+                processing: 'Processing',
+                complete: 'Complete! Successfully generated',
+                images: 'images',
+                enterText: 'Enter text'
+            },
+            zh: {
+                title: '图片边框生成器',
+                uploadTitle: '图片上传',
+                dropText: '拖拽图片到此处<br>或点击选择文件<br>支持 JPG、PNG、BMP、GIF、WEBP 格式',
+                dropTextActive: '释放鼠标添加图片',
+                selectImages: '选择图片',
+                clearList: '清空列表',
+                shortcutHint: '提示：',
+                switchImage: '切换图片',
+                togglePreview: '切换预览',
+                generateImage: '生成图片',
+                settings: '设置',
+                borderText: '边框文字:',
+                borderTextPlaceholder: '请输入边框文字',
+                font: '字体:',
+                fontDefault: '默认 (方正楷体)',
+                showExif: '显示 EXIF 信息:',
+                exifHint: '相机参数信息',
+                cameraLogo: '相机 Logo:',
+                autoDetect: '自动检测',
+                none: '无',
+                showLogoIcon: '显示 Logo 图标:',
+                logoIconHint: '在型号旁显示品牌图标',
+                photoShadow: '照片阴影:',
+                shadowHint: '添加阴影效果',
+                borderPadding: '边框加宽:',
+                leftRight: '左右:',
+                top: '上:',
+                bottom: '下:',
+                previewEffect: '预览效果',
+                generateBorder: '生成边框图片',
+                preview: '预览',
+                previewPlaceholder: '选择图片后在此预览',
+                originalImage: '原图',
+                borderEffect: '边框效果',
+                clickToEnlarge: '点击放大',
+                readyStatus: '就绪 - 拖拽或点击上方区域选择图片',
+                filesSelected: '个文件已选择',
+                selectImageFirst: '请先选择图片',
+                enterBorderText: '请输入边框文字',
+                cleared: '已清空',
+                processing: '正在处理',
+                complete: '完成！成功生成',
+                images: '张图片',
+                enterText: '请输入文字'
+            }
+        };
+
+        let currentLang = 'en';
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (t[key]) {
+                    el.placeholder = t[key];
+                }
+            });
+            document.getElementById('langSwitch').textContent = currentLang === 'en' ? '中文' : 'English';
+            document.documentElement.lang = currentLang === 'en' ? 'en' : 'zh-CN';
+            document.title = t.title;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            applyTranslations();
+            updateDropZoneText();
+        }
+
+        function updateDropZoneText() {
+            const dz = document.getElementById('dropZone');
+            const textEl = dz.querySelector('.drop-zone-text');
+            const t = translations[currentLang];
+            if (dz.classList.contains('drag-over')) {
+                textEl.textContent = t.dropTextActive;
+            } else {
+                textEl.innerHTML = t.dropText;
+            }
+        }
+
+        // ====== Core Variables ======
+        let files = [], currentIndex = -1, isPreviewingBorder = false, currentImage = null, currentExifData = null;
+        let cachedFullscreenUrl = null; // 缓存全屏图片URL
+        const cameraLogos = { canon: null, nikon: null, sony: null, fuji: null, panasonic: null, olympus: null, leica: null, pentax: null, apple: null, samsung: null, huawei: null };
+        const makeMapping = { 'canon': 'canon', 'nikon': 'nikon', 'sony': 'sony', 'fuji': 'fuji', 'fujifilm': 'fuji', 'panasonic': 'panasonic', 'lumix': 'panasonic', 'olympus': 'olympus', 'leica': 'leica', 'pentax': 'pentax', 'ricoh': 'pentax', 'apple': 'apple', 'iphone': 'apple', 'samsung': 'samsung', 'huawei': 'huawei', 'honor': 'huawei' };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDragDrop();
+            initKeyboardShortcuts();
+            loadCameraLogos();
+            await preloadFonts();
+            applyTranslations();
+        });
+
+        async function preloadFonts() {
+            for (const font of ['Noto Sans SC', 'Noto Serif SC', 'Ma Shan Zheng', 'ZCOOL XiaoWei', 'ZCOOL QingKe HuangYou']) {
+                try { await document.fonts.load('16px "' + font + '"'); } catch (e) {}
+            }
+            try { await document.fonts.load('16px "FangZhengKaiTi"'); } catch (e) {}
+            // 预加载 MyriadPro 字体，使用多个大小确保加载
+            try {
+                await document.fonts.load('12px "MyriadPro"');
+                await document.fonts.load('16px "MyriadPro"');
+                await document.fonts.load('24px "MyriadPro"');
+            } catch (e) { console.warn('MyriadPro font load failed:', e); }
+            // 预加载 Lato 字体
+            try {
+                await document.fonts.load('12px "Lato"');
+                await document.fonts.load('16px "Lato"');
+                await document.fonts.load('24px "Lato"');
+            } catch (e) { console.warn('Lato font load failed:', e); }
+        }
+
+        function loadCameraLogos() {
+            const createLogo = (text, bgColor, textColor, fontSize) => {
+                const c = document.createElement('canvas');
+                c.width = 120; c.height = 40;
+                const ctx = c.getContext('2d');
+                ctx.fillStyle = bgColor; ctx.fillRect(0, 0, 120, 40);
+                ctx.fillStyle = textColor; ctx.font = 'bold ' + fontSize + 'px Arial';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(text, 60, 20);
+                return c;
+            };
+            cameraLogos.canon = createLogo('CANON', '#fff', '#000', 24);
+            cameraLogos.nikon = createLogo('NIKON', '#FFD700', '#000', 20);
+            cameraLogos.sony = createLogo('SONY', '#fff', '#000', 24);
+            cameraLogos.fuji = createLogo('FUJIFILM', '#ED1C24', '#fff', 14);
+            cameraLogos.panasonic = createLogo('Panasonic', '#0055A4', '#fff', 12);
+            cameraLogos.olympus = createLogo('OLYMPUS', '#fff', '#000', 16);
+            cameraLogos.leica = createLogo('Leica', '#E41826', '#fff', 20);
+            cameraLogos.pentax = createLogo('PENTAX', '#fff', '#000', 20);
+            cameraLogos.apple = createLogo('', '#fff', '#000', 40);
+            cameraLogos.samsung = createLogo('SAMSUNG', '#1428A0', '#fff', 16);
+            cameraLogos.huawei = createLogo('HUAWEI', '#CF0A2C', '#fff', 18);
+        }
+
+        function initDragDrop() {
+            const dz = document.getElementById('dropZone');
+            dz.addEventListener('click', () => document.getElementById('fileInput').click());
+            dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); dz.querySelector('.drop-zone-text').textContent = translations[currentLang].dropTextActive; });
+            dz.addEventListener('dragleave', (e) => { e.preventDefault(); dz.classList.remove('drag-over'); updateDropZoneText(); });
+            dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('drag-over'); updateDropZoneText(); handleFiles(e.dataTransfer.files); });
+            document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
+        }
+
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { closeFullscreen(); return; }
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+                switch(e.key) {
+                    case 'ArrowUp': e.preventDefault(); navigateFile(-1); break;
+                    case 'ArrowDown': e.preventDefault(); navigateFile(1); break;
+                    case 'v': case 'V': e.preventDefault(); togglePreview(); break;
+                    case 'Enter': e.preventDefault(); generateBorders(); break;
+                }
+            });
+        }
+
+        function handleFiles(fileList) {
+            for (let file of fileList) {
+                if (['image/jpeg', 'image/png', 'image/bmp', 'image/gif', 'image/webp'].includes(file.type) && !files.some(f => f.name === file.name)) {
+                    files.push(file);
+                }
+            }
+            updateFileList();
+            if (files.length > 0) { currentIndex = files.length - 1; loadCurrentImage(); setStatus(files.length + ' ' + translations[currentLang].filesSelected); }
+        }
+
+        function updateFileList() {
+            const fl = document.getElementById('fileList');
+            fl.innerHTML = '';
+            files.forEach((file, i) => {
+                const item = document.createElement('div');
+                item.className = 'file-item' + (i === currentIndex ? ' selected' : '');
+                item.innerHTML = '<span class="file-item-name">' + file.name + '</span><span class="file-item-size">' + formatSize(file.size) + '</span>';
+                item.onclick = () => selectFile(i);
+                fl.appendChild(item);
+            });
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function selectFile(i) { if (i >= 0 && i < files.length) { currentIndex = i; isPreviewingBorder = false; updateFileList(); loadCurrentImage(); } }
+        function navigateFile(d) { if (files.length === 0) return; const ni = currentIndex + d; if (ni >= 0 && ni < files.length) selectFile(ni); }
+
+        function readExifData(file) {
+            return new Promise((resolve) => {
+                if (file.type !== 'image/jpeg') { resolve(null); return; }
+                EXIF.getData(file, function() {
+                    const exif = {
+                        make: EXIF.getTag(this, 'Make') || '',
+                        model: EXIF.getTag(this, 'Model') || '',
+                        lens: EXIF.getTag(this, 'LensModel') || EXIF.getTag(this, 'Lens') || '',
+                        focalLength: EXIF.getTag(this, 'FocalLength') || '',
+                        aperture: EXIF.getTag(this, 'FNumber') || '',
+                        shutterSpeed: EXIF.getTag(this, 'ExposureTime') || '',
+                        iso: EXIF.getTag(this, 'ISOSpeedRatings') || ''
+                    };
+                    if (exif.focalLength && typeof exif.focalLength === 'number') exif.focalLength = Math.round(exif.focalLength);
+                    if (exif.aperture && typeof exif.aperture === 'number') exif.aperture = exif.aperture.toFixed(1);
+                    // 处理快门速度格式
+                    if (exif.shutterSpeed) {
+                        const ss = exif.shutterSpeed;
+                        if (typeof ss === 'number') {
+                            if (ss >= 1) {
+                                exif.shutterSpeed = Math.round(ss) + 's';
+                            } else {
+                                exif.shutterSpeed = '1/' + Math.round(1 / ss) + 's';
+                            }
+                        } else if (typeof ss === 'string') {
+                            // 如果已经是 "1/250" 格式，直接使用
+                            if (ss.includes('/')) {
+                                exif.shutterSpeed = ss + 's';
+                            } else {
+                                const num = parseFloat(ss);
+                                if (!isNaN(num)) {
+                                    if (num >= 1) {
+                                        exif.shutterSpeed = Math.round(num) + 's';
+                                    } else {
+                                        exif.shutterSpeed = '1/' + Math.round(1 / num) + 's';
+                                    }
+                                }
+                            }
+                        } else if (typeof ss === 'object' && ss.numerator !== undefined && ss.denominator !== undefined) {
+                            // EXIF 分数对象格式
+                            if (ss.denominator !== 0) {
+                                const value = ss.numerator / ss.denominator;
+                                if (value >= 1) {
+                                    exif.shutterSpeed = Math.round(value) + 's';
+                                } else {
+                                    exif.shutterSpeed = '1/' + Math.round(1 / value) + 's';
+                                }
+                            }
+                        }
+                    }
+                    resolve(exif);
+                });
+            });
+        }
+
+        function displayExifInfo(exif) {
+            const div = document.getElementById('exifInfo');
+            if (!exif || !exif.model) { div.className = 'exif-info'; div.innerHTML = ''; return; }
+            let info = [];
+            if (exif.make || exif.model) info.push('📷 ' + (exif.make ? exif.make + ' ' : '') + exif.model);
+            if (exif.lens) info.push('🔭 ' + exif.lens);
+            if (exif.focalLength) info.push('📏 ' + exif.focalLength + 'mm');
+            if (exif.aperture) info.push('🔅 f/' + exif.aperture);
+            if (exif.shutterSpeed) info.push('⏱️ ' + exif.shutterSpeed);
+            if (exif.iso) info.push('💡 ISO ' + exif.iso);
+            if (info.length > 0) { div.className = 'exif-info has-data'; div.innerHTML = info.join(' | '); }
+        }
+
+        function loadCurrentImage() {
+            if (currentIndex < 0 || currentIndex >= files.length) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    currentImage = img;
+                    readExifData(files[currentIndex]).then(exif => { currentExifData = exif; displayExifInfo(exif); showPreview(); });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(files[currentIndex]);
+        }
+
+        function showPreview() {
+            if (!currentImage) return;
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const minDim = Math.min(currentImage.width, currentImage.height);
+            const borderSize = Math.floor(minDim * 0.075);
+            const marginSize = Math.floor(borderSize * 0.4);
+            const showExif = document.getElementById('showExif').checked;
+            const hasExif = currentExifData && currentExifData.model;
+            const photoShadow = document.getElementById('photoShadow').checked;
+
+            // 获取边框加宽值（百分比转换为像素）
+            const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * minDim;
+            const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * minDim;
+            const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * minDim;
+
+            // 计算实际需要的内容高度
+            let bottomBorderHeight = borderSize; // 默认只显示边框文字
+            if (showExif && hasExif) {
+                const fontSize = Math.floor(32 * (borderSize * 0.80 / 36));
+                const paramFontSize = Math.floor(fontSize * 0.5);
+                const bottomPadding = Math.floor(borderSize * 0.15);
+                bottomBorderHeight = Math.floor(borderSize * 0.1) + fontSize + paramFontSize + bottomPadding;
+            }
+
+            // 阴影效果需要额外的边距
+            const shadowMargin = photoShadow ? Math.floor(marginSize * 0.3) : 0;
+
+            // 计算最终边距（基础边距 + 额外加宽 + 阴影）
+            const finalLeftMargin = marginSize + extraLeftRight + shadowMargin;
+            const finalRightMargin = marginSize + extraLeftRight + shadowMargin;
+            const finalTopMargin = marginSize + extraTop + shadowMargin;
+            const finalBottomHeight = bottomBorderHeight + extraBottom;
+
+            canvas.width = currentImage.width + finalLeftMargin + finalRightMargin;
+            canvas.height = currentImage.height + finalTopMargin + finalBottomHeight;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制图片（带或不带阴影）
+            if (photoShadow) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = Math.floor(marginSize * 0.4);
+                ctx.shadowOffsetX = shadowMargin;
+                ctx.shadowOffsetY = shadowMargin;
+                ctx.drawImage(currentImage, finalLeftMargin, finalTopMargin);
+                ctx.restore();
+            } else {
+                ctx.drawImage(currentImage, finalLeftMargin, finalTopMargin);
+            }
+
+            if (isPreviewingBorder) drawBorderContent(ctx, canvas.width, canvas.height, currentImage.width, currentImage.height, borderSize, finalLeftMargin, finalTopMargin, shadowMargin, extraLeftRight, extraBottom);
+
+            document.getElementById('previewPlaceholder').style.display = 'none';
+            canvas.style.display = 'block';
+            document.getElementById('previewHint').style.display = 'block';
+            document.getElementById('previewMode').style.display = 'block';
+            document.getElementById('previewMode').textContent = isPreviewingBorder ? translations[currentLang].borderEffect : translations[currentLang].originalImage;
+            invalidateCache(); // 清除全屏图片缓存
+        }
+
+        function getFontFamily() {
+            const sf = document.getElementById('fontSelect').value;
+            const fb = '"Microsoft YaHei", "PingFang SC", sans-serif';
+            return sf === 'FangZhengKaiTi' ? '"FangZhengKaiTi", ' + fb : '"' + sf + '", ' + fb;
+        }
+
+        // 计算自适应字体大小，确保文字不超出框宽
+        function getFittingFontSize(ctx, text, maxFontSize, maxWidth, fontFamily) {
+            let fontSize = maxFontSize;
+            ctx.font = fontSize + 'px ' + fontFamily;
+            let textWidth = ctx.measureText(text).width;
+            while (textWidth > maxWidth && fontSize > 8) {
+                fontSize -= 1;
+                ctx.font = fontSize + 'px ' + fontFamily;
+                textWidth = ctx.measureText(text).width;
+            }
+            return fontSize;
+        }
+
+        function detectCameraMake(exif) {
+            if (!exif || !exif.make) return null;
+            const make = exif.make.toLowerCase();
+            for (const [k, v] of Object.entries(makeMapping)) if (make.includes(k)) return v;
+            return null;
+        }
+
+        function drawBorderContent(ctx, canvasWidth, canvasHeight, imgWidth, imgHeight, borderSize, leftMargin, topMargin, shadowMargin = 0, extraLeftRight = 0, extraBottom = 0) {
+            const text = document.getElementById('borderText').value || translations[currentLang].enterText;
+            const showExif = document.getElementById('showExif').checked;
+            const hasExif = currentExifData && currentExifData.model;
+
+            const fontSize = Math.floor(32 * (borderSize * 0.80 / 36));
+            ctx.fillStyle = 'black';
+            ctx.font = fontSize + 'px ' + getFontFamily();
+            ctx.textBaseline = 'top';
+            ctx.textAlign = 'left';
+            const textY = imgHeight + topMargin + Math.floor(borderSize * 0.1);
+            ctx.fillText(text, leftMargin, textY);
+
+            if (showExif && hasExif) {
+                const paramFontSize = Math.floor(fontSize * 0.5);
+                const modelFontSize = Math.floor(fontSize * 0.42);
+
+                // 计算边框文字的中线位置
+                const centerLineY = textY + fontSize / 2;
+
+                // 构建参数字符串
+                let paramParts = [];
+                if (currentExifData.focalLength) paramParts.push(currentExifData.focalLength + 'mm');
+                if (currentExifData.aperture) paramParts.push('f' + currentExifData.aperture);
+                if (currentExifData.shutterSpeed) paramParts.push(currentExifData.shutterSpeed);
+                if (currentExifData.iso) paramParts.push('ISO' + currentExifData.iso);
+
+                // 设置字体用于测量
+                ctx.font = paramFontSize + "px 'Lato', Arial, sans-serif";
+                const paramSpacing = Math.max(2, Math.floor(borderSize * 0.015));
+                const paramText = paramParts.join(' '.repeat(paramSpacing));
+                const paramTextWidth = ctx.measureText(paramText).width;
+
+                // 测量边框文字宽度
+                ctx.font = fontSize + 'px ' + getFontFamily();
+                const textWidth = ctx.measureText(text).width;
+
+                // 检测是否重叠：边框文字右边界 vs 相机参数左边界（居中时）
+                const textRightX = leftMargin + textWidth + Math.floor(borderSize * 0.1);
+                const paramLeftX = (canvasWidth - extraLeftRight - shadowMargin - paramTextWidth) / 2;
+                const isOverlapping = textRightX > paramLeftX;
+
+                // 绘制相机参数
+                ctx.font = paramFontSize + "px 'Lato', Arial, sans-serif";
+                ctx.fillStyle = '#555';
+                ctx.textBaseline = 'middle';
+
+                if (isOverlapping) {
+                    // 重叠时：相机参数放在边框文字右边，使用更小的间距
+                    const compactSpacing = Math.max(1, Math.floor(borderSize * 0.008));
+                    const compactParamText = paramParts.join(' '.repeat(compactSpacing));
+                    const compactParamWidth = ctx.measureText(compactParamText).width;
+                    const paramX = leftMargin + textWidth + Math.floor(borderSize * 0.15);
+                    ctx.fillText(compactParamText, paramX, centerLineY);
+                } else {
+                    // 不重叠：居中显示
+                    ctx.textAlign = 'center';
+                    ctx.fillText(paramText, (canvasWidth - extraLeftRight - shadowMargin) / 2, centerLineY);
+                    ctx.textAlign = 'left';
+                }
+
+                // 相机型号和logo（右对齐）
+                let line1Text = currentExifData.model || '';
+                if (currentExifData.lens) line1Text += '  |  ' + currentExifData.lens;
+                ctx.font = modelFontSize + "px 'Lato', Arial, sans-serif";
+                ctx.fillStyle = '#666';
+
+                const showLogoIcon = document.getElementById('showLogoIcon').checked;
+                let logoType = document.getElementById('logoSelect').value;
+                if (logoType === 'auto') logoType = detectCameraMake(currentExifData);
+
+                const logoTextGap = Math.floor(borderSize * 0.08);
+                let logoHeight = 0, logoWidth = 0;
+
+                const modelTextWidth = ctx.measureText(line1Text).width;
+                let totalRightWidth = modelTextWidth;
+                if (showLogoIcon && logoType && cameraLogos[logoType]) {
+                    logoHeight = modelFontSize;
+                    logoWidth = cameraLogos[logoType].width * (logoHeight / cameraLogos[logoType].height);
+                    totalRightWidth += logoWidth + logoTextGap;
+                }
+
+                const rightX = canvasWidth - leftMargin - extraLeftRight - shadowMargin - totalRightWidth;
+                ctx.fillText(line1Text, rightX, centerLineY);
+
+                if (showLogoIcon && logoType && cameraLogos[logoType]) {
+                    const logoX = rightX + modelTextWidth + logoTextGap;
+                    ctx.drawImage(cameraLogos[logoType], logoX, centerLineY - logoHeight / 2, logoWidth, logoHeight);
+                }
+                ctx.textBaseline = 'top';
+            }
+        }
+
+        function updateBorderSlider(type) {
+            const slider = document.getElementById('border' + type.charAt(0).toUpperCase() + type.slice(1));
+            const valueSpan = document.getElementById('border' + type.charAt(0).toUpperCase() + type.slice(1) + 'Value');
+            valueSpan.textContent = slider.value;
+            if (currentImage) showPreview();
+        }
+
+        function onFontChange() { if (isPreviewingBorder && currentImage) showPreview(); }
+        function onExifToggle() { if (currentImage) showPreview(); }
+        function togglePreview() { if (!currentImage) { setStatus(translations[currentLang].selectImageFirst); return; } isPreviewingBorder = !isPreviewingBorder; showPreview(); }
+        function clearFiles() {
+            files = []; currentIndex = -1; currentImage = null; currentExifData = null; isPreviewingBorder = false;
+            updateFileList();
+            document.getElementById('previewCanvas').style.display = 'none';
+            document.getElementById('previewPlaceholder').style.display = 'block';
+            document.getElementById('previewMode').style.display = 'none';
+            document.getElementById('previewHint').style.display = 'none';
+            document.getElementById('exifInfo').className = 'exif-info';
+            document.getElementById('exifInfo').innerHTML = '';
+            setStatus(translations[currentLang].cleared);
+        }
+        function setStatus(text) { document.getElementById('statusBar').textContent = text; }
+
+        async function openFullscreen() {
+            if (!currentImage) return;
+            const canvas = document.getElementById('previewCanvas');
+
+            // 显示加载提示
+            const overlay = document.createElement('div');
+            overlay.className = 'fullscreen-overlay';
+            overlay.id = 'fullscreenOverlay';
+            overlay.onclick = closeFullscreen;
+
+            const loading = document.createElement('div');
+            loading.style.cssText = 'color: white; font-size: 18px;';
+            loading.textContent = currentLang === 'en' ? 'Loading...' : '加载中...';
+            overlay.appendChild(loading);
+            document.body.appendChild(overlay);
+
+            // 使用缓存的URL或生成新的
+            let imgSrc;
+            if (cachedFullscreenUrl) {
+                imgSrc = cachedFullscreenUrl;
+            } else {
+                // 使用 toBlob 异步生成 JPEG，比 PNG 快很多
+                imgSrc = await new Promise((resolve) => {
+                    canvas.toBlob((blob) => {
+                        resolve(URL.createObjectURL(blob));
+                    }, 'image/jpeg', 0.92);
+                });
+                cachedFullscreenUrl = imgSrc;
+            }
+
+            // 创建图片
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.onclick = (e) => e.stopPropagation();
+            img.style.maxWidth = '95%';
+            img.style.maxHeight = '95%';
+            img.style.objectFit = 'contain';
+
+            // 替换加载提示
+            overlay.innerHTML = '';
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'fullscreen-close';
+            closeBtn.innerHTML = '×';
+            closeBtn.onclick = (e) => { e.stopPropagation(); closeFullscreen(); };
+            overlay.appendChild(closeBtn);
+            overlay.appendChild(img);
+        }
+
+        function closeFullscreen() {
+            const o = document.getElementById('fullscreenOverlay');
+            if (o) o.remove();
+        }
+
+        function invalidateCache() {
+            // 当预览内容改变时调用，清除缓存
+            if (cachedFullscreenUrl) {
+                URL.revokeObjectURL(cachedFullscreenUrl);
+                cachedFullscreenUrl = null;
+            }
+        }
+
+        async function generateBorders() {
+            if (files.length === 0) { setStatus(translations[currentLang].selectImageFirst); return; }
+            const text = document.getElementById('borderText').value.trim();
+            if (!text) { setStatus(translations[currentLang].enterBorderText); return; }
+
+            const generateBtn = document.getElementById('generateBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            generateBtn.disabled = true;
+            progressContainer.classList.add('active');
+            progressFill.style.width = '0%';
+
+            let successCount = 0;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                progressFill.style.width = ((i / files.length) * 100) + '%';
+                progressText.textContent = translations[currentLang].processing + ' (' + (i+1) + '/' + files.length + '): ' + file.name;
+                try {
+                    const result = await processImage(file, text);
+                    if (result) {
+                        const link = document.createElement('a');
+                        link.download = result.filename;
+                        link.href = result.dataUrl;
+                        link.click();
+                        successCount++;
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                } catch (err) { console.error('Processing failed:', file.name, err); }
+            }
+            progressFill.style.width = '100%';
+            progressText.textContent = translations[currentLang].complete + ' ' + successCount + ' ' + translations[currentLang].images;
+            setTimeout(() => {
+                progressContainer.classList.remove('active');
+                generateBtn.disabled = false;
+                setStatus(translations[currentLang].complete + ' ' + successCount + ' ' + translations[currentLang].images);
+            }, 1000);
+        }
+
+        function processImage(file, text) {
+            return new Promise((resolve, reject) => {
+                readExifData(file).then(exif => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+                                const minDim = Math.min(img.width, img.height);
+                                const borderSize = Math.floor(minDim * 0.075);
+                                const marginSize = Math.floor(borderSize * 0.4);
+                                const showExif = document.getElementById('showExif').checked;
+                                const hasExif = exif && exif.model;
+                                const photoShadow = document.getElementById('photoShadow').checked;
+
+                                // 获取边框加宽值（百分比转换为像素）
+                                const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * minDim;
+                                const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * minDim;
+                                const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * minDim;
+
+                                // 计算实际需要的内容高度
+                                let bottomBorderHeight = borderSize; // 默认只显示边框文字
+                                if (showExif && hasExif) {
+                                    const fontSize = Math.floor(32 * (borderSize * 0.80 / 36));
+                                    const paramFontSize = Math.floor(fontSize * 0.5);
+                                    const bottomPadding = Math.floor(borderSize * 0.15);
+                                    bottomBorderHeight = Math.floor(borderSize * 0.1) + fontSize + paramFontSize + bottomPadding;
+                                }
+
+                                // 阴影效果需要额外的边距
+                                const shadowMargin = photoShadow ? Math.floor(marginSize * 0.3) : 0;
+
+                                // 计算最终边距（基础边距 + 额外加宽 + 阴影）
+                                const finalLeftMargin = marginSize + extraLeftRight + shadowMargin;
+                                const finalRightMargin = marginSize + extraLeftRight + shadowMargin;
+                                const finalTopMargin = marginSize + extraTop + shadowMargin;
+                                const finalBottomHeight = bottomBorderHeight + extraBottom;
+
+                                canvas.width = img.width + finalLeftMargin + finalRightMargin;
+                                canvas.height = img.height + finalTopMargin + finalBottomHeight;
+                                ctx.fillStyle = 'white';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                                // 绘制图片（带或不带阴影）
+                                if (photoShadow) {
+                                    ctx.save();
+                                    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                                    ctx.shadowBlur = Math.floor(marginSize * 0.4);
+                                    ctx.shadowOffsetX = shadowMargin;
+                                    ctx.shadowOffsetY = shadowMargin;
+                                    ctx.drawImage(img, finalLeftMargin, finalTopMargin);
+                                    ctx.restore();
+                                } else {
+                                    ctx.drawImage(img, finalLeftMargin, finalTopMargin);
+                                }
+
+                                const fontSize = Math.floor(32 * (borderSize * 0.80 / 36));
+                                ctx.fillStyle = 'black';
+                                ctx.font = fontSize + 'px ' + getFontFamily();
+                                ctx.textBaseline = 'top';
+                                ctx.textAlign = 'left';
+                                const textY = img.height + finalTopMargin + Math.floor(borderSize * 0.1);
+                                ctx.fillText(text, finalLeftMargin, textY);
+
+                                if (showExif && hasExif) {
+                                    const paramFontSize = Math.floor(fontSize * 0.5);
+                                    const modelFontSize = Math.floor(fontSize * 0.42);
+
+                                    // 计算边框文字的中线位置
+                                    const centerLineY = textY + fontSize / 2;
+
+                                    // 构建参数字符串
+                                    let paramParts = [];
+                                    if (exif.focalLength) paramParts.push(exif.focalLength + 'mm');
+                                    if (exif.aperture) paramParts.push('f' + exif.aperture);
+                                    if (exif.shutterSpeed) paramParts.push(exif.shutterSpeed);
+                                    if (exif.iso) paramParts.push('ISO' + exif.iso);
+
+                                    // 设置字体用于测量
+                                    ctx.font = paramFontSize + "px 'Lato', Arial, sans-serif";
+                                    const paramSpacing = Math.max(2, Math.floor(borderSize * 0.015));
+                                    const paramText = paramParts.join(' '.repeat(paramSpacing));
+                                    const paramTextWidth = ctx.measureText(paramText).width;
+
+                                    // 测量边框文字宽度
+                                    ctx.font = fontSize + 'px ' + getFontFamily();
+                                    const textWidth = ctx.measureText(text).width;
+
+                                    // 检测是否重叠
+                                    const textRightX = finalLeftMargin + textWidth + Math.floor(borderSize * 0.1);
+                                    const paramLeftX = (canvas.width - shadowMargin - paramTextWidth) / 2;
+                                    const isOverlapping = textRightX > paramLeftX;
+
+                                    // 绘制相机参数
+                                    ctx.font = paramFontSize + "px 'Lato', Arial, sans-serif";
+                                    ctx.fillStyle = '#555';
+                                    ctx.textBaseline = 'middle';
+
+                                    if (isOverlapping) {
+                                        // 重叠时：相机参数放在边框文字右边，使用更小的间距
+                                        const compactSpacing = Math.max(1, Math.floor(borderSize * 0.008));
+                                        const compactParamText = paramParts.join(' '.repeat(compactSpacing));
+                                        const paramX = finalLeftMargin + textWidth + Math.floor(borderSize * 0.15);
+                                        ctx.fillText(compactParamText, paramX, centerLineY);
+                                    } else {
+                                        // 不重叠：居中显示
+                                        ctx.textAlign = 'center';
+                                        ctx.fillText(paramText, (canvas.width - shadowMargin) / 2, centerLineY);
+                                        ctx.textAlign = 'left';
+                                    }
+
+                                    // 相机型号和logo（右对齐）
+                                    let line1Text = exif.model || '';
+                                    if (exif.lens) line1Text += '  |  ' + exif.lens;
+                                    ctx.font = modelFontSize + "px 'Lato', Arial, sans-serif";
+                                    ctx.fillStyle = '#666';
+
+                                    const showLogoIcon = document.getElementById('showLogoIcon').checked;
+                                    let logoType = document.getElementById('logoSelect').value;
+                                    if (logoType === 'auto') logoType = detectCameraMake(exif);
+
+                                    const logoTextGap = Math.floor(borderSize * 0.08);
+                                    let logoHeight = 0, logoWidth = 0;
+
+                                    const modelTextWidth = ctx.measureText(line1Text).width;
+                                    let totalRightWidth = modelTextWidth;
+                                    if (showLogoIcon && logoType && cameraLogos[logoType]) {
+                                        logoHeight = modelFontSize;
+                                        logoWidth = cameraLogos[logoType].width * (logoHeight / cameraLogos[logoType].height);
+                                        totalRightWidth += logoWidth + logoTextGap;
+                                    }
+
+                                    const rightX = canvas.width - finalRightMargin - totalRightWidth;
+                                    ctx.fillText(line1Text, rightX, centerLineY);
+
+                                    if (showLogoIcon && logoType && cameraLogos[logoType]) {
+                                        const logoX = rightX + modelTextWidth + logoTextGap;
+                                        ctx.drawImage(cameraLogos[logoType], logoX, centerLineY - logoHeight / 2, logoWidth, logoHeight);
+                                    }
+                                    ctx.textBaseline = 'top';
+                                }
+
+                                const baseName = file.name.replace(/\.[^/.]+$/, '');
+                                resolve({ filename: baseName + '_border.jpg', dataUrl: canvas.toDataURL('image/jpeg', 1.0) });
+                            } catch (err) { reject(err); }
+                        };
+                        img.onerror = reject;
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

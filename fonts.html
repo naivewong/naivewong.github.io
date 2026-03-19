@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "SF Pro Display", -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%); min-height: 100vh; padding: 30px 20px; }
+        .container { max-width: 820px; margin: 0 auto; background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 28px 20px; text-align: center; }
+        .header h1 { font-size: 26px; font-weight: 600; letter-spacing: 0.5px; }
+        .main-content { padding: 28px; }
+        .section-title { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .section { margin-bottom: 24px; }
+        .controls-wrapper { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; width: 100%; }
+        .text-input { flex: 1; min-width: 200px; padding: 10px 14px; font-size: 14px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; background: #fafbfc; transition: all 0.2s ease; }
+        .text-input:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .select-wrapper { position: relative; }
+        .font-select { padding: 10px 36px 10px 14px; font-size: 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fafbfc; cursor: pointer; outline: none; appearance: none; min-width: 140px; transition: all 0.2s ease; }
+        .font-select:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .select-wrapper::after { content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-top-color: #64748b; pointer-events: none; }
+        .preview-container { background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+        .preview-text { font-size: 48px; text-align: center; word-break: break-word; line-height: 1.4; transition: font-family 0.15s ease; color: #1e293b; }
+        .loading { color: #94a3b8; font-style: italic; }
+        .font-info { text-align: center; margin-top: 16px; color: #64748b; font-size: 13px; font-weight: 500; }
+        .status-bar { background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%); padding: 12px 24px; border-top: 1px solid #e2e8f0; }
+        .status-text { font-size: 13px; color: #64748b; font-weight: 500; }
+        @media (max-width: 768px) {
+            .controls-wrapper { flex-direction: column; }
+            .text-input { min-width: 100%; }
+            .font-select { width: 100%; }
+            .preview-text { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔤 Font Preview</h1>
+        </div>
+        <div class="main-content">
+            <div class="section">
+                <div class="section-title">Preview Settings</div>
+                <div class="controls-wrapper">
+                    <input type="text" class="text-input" id="textInput" value="Please enter something to display" placeholder="Type something...">
+                    <div class="select-wrapper">
+                        <select class="font-select" id="fontFamilySelect"></select>
+                    </div>
+                    <div class="select-wrapper">
+                        <select class="font-select" id="fontVariantSelect"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">Preview</div>
+                <div class="preview-container">
+                    <div class="preview-text" id="previewText">Please enter something to display</div>
+                </div>
+                <div class="font-info" id="fontInfo"></div>
+            </div>
+        </div>
+        <div class="status-bar"><span class="status-text" id="statusText">Ready - Select a font family and variant to preview</span></div>
+    </div>
+
+    <script>
+        // 字体数据结构
+        const fontData = {
+            "Anonymous Pro": {
+                files: ["AnonymousPro-Bold.ttf", "AnonymousPro-BoldItalic.ttf", "AnonymousPro-Italic.ttf", "AnonymousPro-Regular.ttf"]
+            },
+            "Antic Sans": {
+                files: ["AnticSans-Regular.otf"]
+            },
+            "Asul": {
+                files: ["Asul-Bold.ttf", "Asul-Regular.ttf"]
+            },
+            "Average Sans": {
+                files: ["AverageSans-Regular.ttf"]
+            },
+            "Bree Serif": {
+                files: ["BreeSerif-Regular.otf"]
+            },
+            "Catalyst": {
+                files: ["Catalyst-Bold.ttf", "Catalyst-BoldItalic.ttf", "Catalyst-Extrabold.ttf", "Catalyst-ExtraboldItalic.ttf", "Catalyst-Extralight.ttf", "Catalyst-ExtralightItalic.ttf", "Catalyst-Light.ttf", "Catalyst-LightItalic.ttf", "Catalyst-Medium.ttf", "Catalyst-MediumItalic.ttf", "Catalyst-Regular.ttf", "Catalyst-RegularItalic.ttf", "Catalyst-Semibold.ttf", "Catalyst-SemiboldItalic.ttf"]
+            },
+            "Evolventa": {
+                files: ["Evolventa-Bold.ttf", "Evolventa-BoldOblique.ttf", "Evolventa-Oblique.ttf", "Evolventa-Regular.ttf"]
+            },
+            "Google Sans Code": {
+                files: ["GoogleSansCode-Italic[wght]-variable.ttf", "GoogleSansCode[wght]-variable.ttf"]
+            },
+            "Inconsolata": {
+                files: ["Inconsolata-Black.ttf", "Inconsolata-Bold.ttf", "Inconsolata-CondensedBlack.ttf", "Inconsolata-CondensedBold.ttf", "Inconsolata-CondensedExtraBold.ttf", "Inconsolata-CondensedExtraLight.ttf", "Inconsolata-CondensedLight.ttf", "Inconsolata-CondensedMedium.ttf", "Inconsolata-CondensedRegular.ttf", "Inconsolata-CondensedSemiBold.ttf", "Inconsolata-CondensedThin.ttf", "Inconsolata-ExpandedBlack.ttf", "Inconsolata-ExpandedBold.ttf", "Inconsolata-ExpandedExtraBold.ttf", "Inconsolata-ExpandedExtraLight.ttf", "Inconsolata-ExpandedLight.ttf", "Inconsolata-ExpandedMedium.ttf", "Inconsolata-ExpandedRegular.ttf", "Inconsolata-ExpandedSemiBold.ttf", "Inconsolata-ExpandedThin.ttf", "Inconsolata-ExtraBold.ttf", "Inconsolata-ExtraCondensedBlack.ttf", "Inconsolata-ExtraCondensedBold.ttf", "Inconsolata-ExtraCondensedExtraBold.ttf", "Inconsolata-ExtraCondensedExtraLight.ttf", "Inconsolata-ExtraCondensedLight.ttf", "Inconsolata-ExtraCondensedMedium.ttf", "Inconsolata-ExtraCondensedRegular.ttf", "Inconsolata-ExtraCondensedSemiBold.ttf", "Inconsolata-ExtraCondensedThin.ttf", "Inconsolata-ExtraExpandedBlack.ttf", "Inconsolata-ExtraExpandedBold.ttf", "Inconsolata-ExtraExpandedExtraBold.ttf", "Inconsolata-ExtraExpandedExtraLight.ttf", "Inconsolata-ExtraExpandedLight.ttf", "Inconsolata-ExtraExpandedMedium.ttf", "Inconsolata-ExtraExpandedRegular.ttf", "Inconsolata-ExtraExpandedSemiBold.ttf", "Inconsolata-ExtraExpandedThin.ttf", "Inconsolata-ExtraLight.ttf", "Inconsolata-Light.ttf", "Inconsolata-Medium.ttf", "Inconsolata-Regular.ttf", "Inconsolata-SemiBold.ttf", "Inconsolata-SemiCondensedBlack.ttf", "Inconsolata-SemiCondensedBold.ttf", "Inconsolata-SemiCondensedExtraBold.ttf", "Inconsolata-SemiCondensedExtraLight.ttf", "Inconsolata-SemiCondensedLight.ttf", "Inconsolata-SemiCondensedMedium.ttf", "Inconsolata-SemiCondensedRegular.ttf", "Inconsolata-SemiCondensedSemiBold.ttf", "Inconsolata-SemiCondensedThin.ttf", "Inconsolata-SemiExpandedBlack.ttf", "Inconsolata-SemiExpandedBold.ttf", "Inconsolata-SemiExpandedExtraBold.ttf", "Inconsolata-SemiExpandedExtraLight.ttf", "Inconsolata-SemiExpandedLight.ttf", "Inconsolata-SemiExpandedMedium.ttf", "Inconsolata-SemiExpandedRegular.ttf", "Inconsolata-SemiExpandedSemiBold.ttf", "Inconsolata-SemiExpandedThin.ttf", "Inconsolata-Thin.ttf", "Inconsolata-UltraCondensedBlack.ttf", "Inconsolata-UltraCondensedBold.ttf", "Inconsolata-UltraCondensedExtraBold.ttf", "Inconsolata-UltraCondensedExtraLight.ttf", "Inconsolata-UltraCondensedLight.ttf", "Inconsolata-UltraCondensedMedium.ttf", "Inconsolata-UltraCondensedRegular.ttf", "Inconsolata-UltraCondensedSemiBold.ttf", "Inconsolata-UltraCondensedThin.ttf", "Inconsolata-UltraExpandedBlack.ttf", "Inconsolata-UltraExpandedBold.ttf", "Inconsolata-UltraExpandedExtraBold.ttf", "Inconsolata-UltraExpandedExtraLight.ttf", "Inconsolata-UltraExpandedLight.ttf", "Inconsolata-UltraExpandedMedium.ttf", "Inconsolata-UltraExpandedRegular.ttf", "Inconsolata-UltraExpandedSemiBold.ttf", "Inconsolata-UltraExpandedThin.ttf"]
+            },
+            "Junge": {
+                files: ["Junge-Regular.ttf"]
+            },
+            "Lato": {
+                files: ["Lato-Black.ttf", "Lato-BlackItalic.ttf", "Lato-Bold.ttf", "Lato-BoldItalic.ttf", "Lato-Hairline.ttf", "Lato-HairlineItalic.ttf", "Lato-Heavy.ttf", "Lato-HeavyItalic.ttf", "Lato-Italic.ttf", "Lato-Light.ttf", "Lato-LightItalic.ttf", "Lato-Medium.ttf", "Lato-MediumItalic.ttf", "Lato-Regular.ttf", "Lato-Semibold.ttf", "Lato-SemiboldItalic.ttf", "Lato-Thin.ttf", "Lato-ThinItalic.ttf"]
+            },
+            "Libertinus Sans": {
+                files: ["LibertinusKeyboard-Regular.ttf", "LibertinusSans-Bold.ttf", "LibertinusSans-Italic.ttf", "LibertinusSans-Regular.ttf"]
+            },
+            "Mulish": {
+                files: ["Mulish-Black.ttf", "Mulish-BlackItalic.ttf", "Mulish-Bold.ttf", "Mulish-BoldItalic.ttf", "Mulish-ExtraBlack.ttf", "Mulish-ExtraBlackItalic.ttf", "Mulish-ExtraBold.ttf", "Mulish-ExtraBoldItalic.ttf", "Mulish-ExtraLight.ttf", "Mulish-ExtraLightItalic.ttf", "Mulish-Italic.ttf", "Mulish-Light.ttf", "Mulish-LightItalic.ttf", "Mulish-Medium.ttf", "Mulish-MediumItalic.ttf", "Mulish-Regular.ttf", "Mulish-SemiBold.ttf", "Mulish-SemiBoldItalic.ttf"]
+            },
+            "Neuton": {
+                files: ["Neuton-Bold.ttf", "Neuton-ExtraBold.ttf", "Neuton-ExtraLight.ttf", "Neuton-Italic.ttf", "Neuton-Light.ttf", "Neuton-Regular.ttf"]
+            },
+            "Open Sans": {
+                files: ["OpenSans-Italic-VariableFont_wdth,wght.ttf", "OpenSans-VariableFont_wdth,wght.ttf"]
+            },
+            "Patua One": {
+                files: ["PatuaOne-Regular.ttf"]
+            },
+            "Poison": {
+                files: ["Poison-Regular.ttf"]
+            },
+            "Quattrocento Sans": {
+                files: ["QuattrocentoSans-Bold.ttf", "QuattrocentoSans-BoldItalic.ttf", "QuattrocentoSans-Italic.ttf", "QuattrocentoSans-Regular.ttf"]
+            },
+            "Radley": {
+                files: ["Radley-Italic.ttf", "Radley-Regular.ttf"]
+            },
+            "Roboto": {
+                files: ["Roboto-Black.ttf", "Roboto-BlackItalic.ttf", "Roboto-Bold.ttf", "Roboto-BoldItalic.ttf", "Roboto-Italic.ttf", "Roboto-Light.ttf", "Roboto-LightItalic.ttf", "Roboto-Medium.ttf", "Roboto-MediumItalic.ttf", "Roboto-Regular.ttf", "Roboto-Thin.ttf", "Roboto-ThinItalic.ttf", "RobotoCondensed-Bold.ttf", "RobotoCondensed-BoldItalic.ttf", "RobotoCondensed-Italic.ttf", "RobotoCondensed-Light.ttf", "RobotoCondensed-LightItalic.ttf", "RobotoCondensed-Medium.ttf", "RobotoCondensed-MediumItalic.ttf", "RobotoCondensed-Regular.ttf"]
+            },
+            "SongBuddy": {
+                files: ["SongBuddy Light.otf"]
+            },
+            "Source Sans": {
+                files: ["SourceSans3-Black.ttf", "SourceSans3-BlackIt.ttf", "SourceSans3-Bold.ttf", "SourceSans3-BoldIt.ttf", "SourceSans3-ExtraLight.ttf", "SourceSans3-ExtraLightIt.ttf", "SourceSans3-It.ttf", "SourceSans3-Light.ttf", "SourceSans3-LightIt.ttf", "SourceSans3-Medium.ttf", "SourceSans3-MediumIt.ttf", "SourceSans3-Regular.ttf", "SourceSans3-Semibold.ttf", "SourceSans3-SemiboldIt.ttf"]
+            },
+            "Special Elite": {
+                files: ["SpecialElite.ttf"]
+            },
+            "Tenor Sans": {
+                files: ["TenorSans-Regular.ttf"]
+            }
+        };
+
+        // 美化字体名称显示
+        function beautifyFontName(filename) {
+            let name = filename.replace(/\.(ttf|otf)$/i, '');
+            name = name.replace(/\[wght\]-variable/i, '');
+            name = name.replace(/\[wdth,wght\]/i, '');
+            name = name.replace(/-VariableFont$/i, '');
+            name = name.replace(/-Italic$/i, ' Italic');
+            name = name.replace(/-/g, ' ');
+            name = name.replace(/\s+/g, ' ').trim();
+            name = name.split(' ').map(word => {
+                if (word.length === 0) return word;
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }).join(' ');
+            return name;
+        }
+
+        const loadedFonts = new Map();
+        let currentFamily = 'Lato';
+        let currentVariant = 'Lato-Regular.ttf';
+
+        const fontFamilySelect = document.getElementById('fontFamilySelect');
+        const fontVariantSelect = document.getElementById('fontVariantSelect');
+        const textInput = document.getElementById('textInput');
+        const previewText = document.getElementById('previewText');
+        const fontInfo = document.getElementById('fontInfo');
+        const statusText = document.getElementById('statusText');
+
+        function initFontFamilySelect() {
+            fontFamilySelect.innerHTML = '';
+            Object.keys(fontData).sort().forEach(family => {
+                const option = document.createElement('option');
+                option.value = family;
+                option.textContent = family;
+                if (family === currentFamily) option.selected = true;
+                fontFamilySelect.appendChild(option);
+            });
+        }
+
+        function updateFontVariantSelect() {
+            fontVariantSelect.innerHTML = '';
+            const files = fontData[currentFamily]?.files || [];
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = beautifyFontName(file);
+                if (file === currentVariant) option.selected = true;
+                fontVariantSelect.appendChild(option);
+            });
+        }
+
+        async function loadFont(family, filename) {
+            const fontKey = `${family}/${filename}`;
+            if (loadedFonts.has(fontKey)) {
+                return loadedFonts.get(fontKey);
+            }
+            const fontPath = `fonts/${family}/${filename}`;
+            const fontName = `CustomFont_${family.replace(/\s+/g, '_')}_${filename.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            try {
+                const fontFace = new FontFace(fontName, `url(${fontPath})`);
+                const loadedFont = await fontFace.load();
+                document.fonts.add(loadedFont);
+                loadedFonts.set(fontKey, fontName);
+                return fontName;
+            } catch (error) {
+                console.error('Failed to load font:', fontPath, error);
+                return null;
+            }
+        }
+
+        async function updatePreview() {
+            const text = textInput.value || 'Please enter something to display';
+            previewText.textContent = text;
+            previewText.classList.add('loading');
+            statusText.textContent = 'Loading font...';
+
+            const fontName = await loadFont(currentFamily, currentVariant);
+
+            if (fontName) {
+                previewText.style.fontFamily = `"${fontName}", sans-serif`;
+                statusText.textContent = `Font loaded: ${currentFamily} - ${beautifyFontName(currentVariant)}`;
+            } else {
+                statusText.textContent = 'Failed to load font';
+            }
+
+            previewText.classList.remove('loading');
+            fontInfo.textContent = `${currentFamily} - ${beautifyFontName(currentVariant)}`;
+        }
+
+        fontFamilySelect.addEventListener('change', () => {
+            currentFamily = fontFamilySelect.value;
+            currentVariant = fontData[currentFamily]?.files[0] || '';
+            updateFontVariantSelect();
+            updatePreview();
+        });
+
+        fontVariantSelect.addEventListener('change', () => {
+            currentVariant = fontVariantSelect.value;
+            updatePreview();
+        });
+
+        textInput.addEventListener('input', () => {
+            previewText.textContent = textInput.value || 'Please enter something to display';
+        });
+
+        initFontFamilySelect();
+        updateFontVariantSelect();
+        updatePreview();
+    </script>
+</body>
+</html>
