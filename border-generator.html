@@ -561,10 +561,10 @@
             const hasExif = currentExifData && currentExifData.model;
             const photoShadow = document.getElementById('photoShadow').checked;
 
-            // 获取边框加宽值（百分比转换为像素）
-            const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * minDim;
-            const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * minDim;
-            const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * minDim;
+            // 获取边框加宽值（百分比转换为像素，基于图片对应维度）
+            const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * currentImage.width;
+            const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * currentImage.height;
+            const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * currentImage.height;
 
             // 计算实际需要的内容高度
             let bottomBorderHeight = borderSize; // 默认只显示边框文字
@@ -675,9 +675,11 @@
                 ctx.font = fontSize + 'px ' + getFontFamily();
                 const textWidth = ctx.measureText(text).width;
 
-                // 检测是否重叠：边框文字右边界 vs 相机参数左边界（居中时）
+                // 检测是否重叠：边框文字右边界 vs 相机参数左边界（相对于图片区域居中）
                 const textRightX = leftMargin + textWidth + Math.floor(borderSize * 0.1);
-                const paramLeftX = (canvasWidth - extraLeftRight - shadowMargin - paramTextWidth) / 2;
+                // 相机参数在图片宽度范围内居中
+                const paramCenterX = leftMargin + imgWidth / 2;
+                const paramLeftX = paramCenterX - paramTextWidth / 2;
                 const isOverlapping = textRightX > paramLeftX;
 
                 // 绘制相机参数
@@ -693,9 +695,9 @@
                     const paramX = leftMargin + textWidth + Math.floor(borderSize * 0.15);
                     ctx.fillText(compactParamText, paramX, centerLineY);
                 } else {
-                    // 不重叠：居中显示
+                    // 不重叠：在图片宽度范围内居中显示
                     ctx.textAlign = 'center';
-                    ctx.fillText(paramText, (canvasWidth - extraLeftRight - shadowMargin) / 2, centerLineY);
+                    ctx.fillText(paramText, paramCenterX, centerLineY);
                     ctx.textAlign = 'left';
                 }
 
@@ -720,7 +722,8 @@
                     totalRightWidth += logoWidth + logoTextGap;
                 }
 
-                const rightX = canvasWidth - leftMargin - extraLeftRight - shadowMargin - totalRightWidth;
+                // 相机型号固定在图片右边缘位置（不随边框加宽移动）
+                const rightX = leftMargin + imgWidth - totalRightWidth;
                 ctx.fillText(line1Text, rightX, centerLineY);
 
                 if (showLogoIcon && logoType && cameraLogos[logoType]) {
@@ -871,10 +874,10 @@
                                 const hasExif = exif && exif.model;
                                 const photoShadow = document.getElementById('photoShadow').checked;
 
-                                // 获取边框加宽值（百分比转换为像素）
-                                const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * minDim;
-                                const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * minDim;
-                                const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * minDim;
+                                // 获取边框加宽值（百分比转换为像素，基于图片对应维度）
+                                const extraLeftRight = parseInt(document.getElementById('borderLeftRight').value) / 100 * img.width;
+                                const extraTop = parseInt(document.getElementById('borderTop').value) / 100 * img.height;
+                                const extraBottom = parseInt(document.getElementById('borderBottom').value) / 100 * img.height;
 
                                 // 计算实际需要的内容高度
                                 let bottomBorderHeight = borderSize; // 默认只显示边框文字
@@ -946,7 +949,9 @@
 
                                     // 检测是否重叠
                                     const textRightX = finalLeftMargin + textWidth + Math.floor(borderSize * 0.1);
-                                    const paramLeftX = (canvas.width - shadowMargin - paramTextWidth) / 2;
+                                    // 相机参数在图片宽度范围内居中
+                                    const paramCenterX = finalLeftMargin + img.width / 2;
+                                    const paramLeftX = paramCenterX - paramTextWidth / 2;
                                     const isOverlapping = textRightX > paramLeftX;
 
                                     // 绘制相机参数
@@ -961,9 +966,9 @@
                                         const paramX = finalLeftMargin + textWidth + Math.floor(borderSize * 0.15);
                                         ctx.fillText(compactParamText, paramX, centerLineY);
                                     } else {
-                                        // 不重叠：居中显示
+                                        // 不重叠：在图片宽度范围内居中显示
                                         ctx.textAlign = 'center';
-                                        ctx.fillText(paramText, (canvas.width - shadowMargin) / 2, centerLineY);
+                                        ctx.fillText(paramText, paramCenterX, centerLineY);
                                         ctx.textAlign = 'left';
                                     }
 
@@ -988,7 +993,8 @@
                                         totalRightWidth += logoWidth + logoTextGap;
                                     }
 
-                                    const rightX = canvas.width - finalRightMargin - totalRightWidth;
+                                    // 相机型号固定在图片右边缘位置（不随边框加宽移动）
+                                    const rightX = finalLeftMargin + img.width - totalRightWidth;
                                     ctx.fillText(line1Text, rightX, centerLineY);
 
                                     if (showLogoIcon && logoType && cameraLogos[logoType]) {
